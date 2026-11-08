@@ -1,0 +1,30 @@
+backend:
+  name: github
+  repo: kauser66/kauser07
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  - name: "news"
+    label: "সংবাদ"
+    folder: "data/news"
+    create: true
+    fields:
+      - {label: "শিরোনাম", name: "title", widget: "string"}
+      - {label: "তারিখ", name: "date", widget: "string", required: false}
+      - {label: "ক্যাটাগরি", name: "cat", widget: "string", required: false}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "বিস্তারিত", name: "text", widget: "text", required: false}
+
+  - name: "people"
+    label: "পরিচিত মুখ"
+    folder: "data/people"
+    create: true
+    fields:
+      - {label: "নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "পদবি", name: "title", widget: "string", required: false}
+      - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "ফোন", name: "phone", widget: "string", required: false}
