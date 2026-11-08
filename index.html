@@ -71,17 +71,17 @@ footer{background:var(--dark);color:#fff;padding:40px 0 18px;border-top:5px soli
 <script>
 async function fetchJSON(path){try{const res=await fetch(path);if(res.ok)return await res.json()}catch(e){}return null}
 async function loadData(){
- const village=await fetchJSON('/data/village/index.json')||{};
- const news=await fetchJSON('/data/news/index.json')||[];
- const people=await fetchJSON('/data/people/index.json')||[];
- const mosque=await fetchJSON('/data/mosque/index.json')||[];
- const school=await fetchJSON('/data/school/index.json')||[];
- const madrasa=await fetchJSON('/data/madrasa/index.json')||[];
- const graveyard=await fetchJSON('/data/graveyard/index.json')||[];
- const bazar=await fetchJSON('/data/bazar/index.json')||[];
- const mor=await fetchJSON('/data/mor/index.json')||[];
- const volunteers=await fetchJSON('/data/volunteers/index.json')||[];
- const dev=await fetchJSON('/data/dev/index.json')||{name:'মোঃ কাওছার আহম্মেদ',email:'rvallagena2@gmail.com',fb:'https://www.facebook.com/normal.fb.user',photo:'',intro:'',edu:'সিভিল টেকনোলজি (ডিপ্লোমা), সিলেট সরকারি পলিটেকনিক ইনস্টিটিউট',map:'',phone:''};
+ const village=await fetchJSON('data/village/index.json')||{};
+ const news=await fetchJSON('data/news/index.json')||[];
+ const people=await fetchJSON('data/people/index.json')||[];
+ const mosque=await fetchJSON('data/mosque/index.json')||[];
+ const school=await fetchJSON('data/school/index.json')||[];
+ const madrasa=await fetchJSON('data/madrasa/index.json')||[];
+ const graveyard=await fetchJSON('data/graveyard/index.json')||[];
+ const bazar=await fetchJSON('data/bazar/index.json')||[];
+ const mor=await fetchJSON('data/mor/index.json')||[];
+ const volunteers=await fetchJSON('data/volunteers/index.json')||[];
+ const dev=await fetchJSON('data/dev/index.json')||{name:'মোঃ কাওছার আহম্মেদ',email:'rvallagena2@gmail.com',fb:'https://www.facebook.com/normal.fb.user',photo:'',intro:'',edu:'সিভিল টেকনোলজি (ডিপ্লোমা), সিলেট সরকারি পলিটেকনিক ইনস্টিটিউট',map:'',phone:''};
  window.DATA={village:{...village,ward:'ওয়ার্ড - ৪ নং',union:'ইউনিয়ন - ১১ নং শাহবাজপুর ইউনিয়ন পরিষদ'},member:{},community:{},news,people,mosque,school,madrasa,graveyard,bazar,mor,volunteers,dev};
  build();clock();motion();extras();
 }
@@ -90,7 +90,12 @@ var BN=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];function bn
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 var FIELDS=[['title','পদবি'],['nick','ডাকনাম'],['house','বাড়ির নাম'],['type','ধরন'],['owner','দোকানদার'],['address','ঠিকানা']];
 function acts(it,ml){var h='';if(it.phone)h+='<a href="tel:'+esc(it.phone)+'"><i class="fas fa-phone"></i> '+esc(it.phone)+'</a>';if(it.email)h+='<a href="mailto:'+esc(it.email)+'"><i class="fas fa-envelope"></i> '+esc(it.email)+'</a>';if(it.fb)h+='<a href="'+esc(it.fb)+'" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i> ফেসবুক</a>';if(it.map)h+='<a href="'+esc(it.map)+'" target="_blank" rel="noopener"><i class="fas fa-location-dot"></i> '+ml+'</a>';return h?'<div class="acts">'+h+'</div>':''}
-function photo(src,icon,alt){return '<div class="ph"><i class="fas '+icon+'"></i>'+(src?'<img loading="lazy" src="'+esc(src)+'" alt="'+esc(alt)+'" onerror="this.style.display=\'none\'">':'')+'</div>'}
+function photo(src,icon,alt){
+  if(src){
+    if(src.startsWith('/')) src = src.substring(1); 
+  }
+  return '<div class="ph"><i class="fas '+icon+'"></i>'+(src?'<img loading="lazy" src="'+esc(src)+'" alt="'+esc(alt)+'" onerror="this.style.display=\'none\'">':'')+'</div>';
+}
 function card(it,i,icon,ml){var rows='';FIELDS.forEach(f=>{if(it[f[0]])rows+='<div class="row"><b>'+f[1]+':</b> '+esc(it[f[0]])+'</div>'});var shops='';if(it.shops&&it.shops.length)shops='<div class="shops"><h5><i class="fas fa-store"></i> দোকানসমূহ ('+bn(it.shops.length)+')</h5><div class="grid">'+it.shops.map((s,j)=>card(s,j,'fa-shop','দোকানের ম্যাপ')).join('')+'</div></div>';return '<div class="card reveal'+(shops?' wide':'')+'"><span class="sn">'+bn(i+1)+'</span>'+photo(it.photo,icon,it.name)+'<div class="cb"><h4>'+esc(it.name||'নাম যোগ হয়নি')+'</h4>'+rows+(it.about?'<div class="about">'+esc(it.about)+'</div>':'')+acts(it,ml)+'</div>'+shops+'</div>'}
 function emptyBox(){return '<div class="empty reveal"><i class="fas fa-hourglass-half"></i>এই তথ্য শীঘ্রই যোগ করা হবে।</div>'}
 function grid(items,icon,ml){return items.length?'<div class="grid">'+items.map((x,i)=>card(x,i,icon,ml)).join('')+'</div>':emptyBox()}
