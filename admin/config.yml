@@ -7,6 +7,17 @@ media_folder: "images"
 public_folder: "/images"
 
 collections:
+  # ১. গ্রামের মূল তথ্য (হিরো সেকশনের বড় ছবি)
+  - name: "village"
+    label: "গ্রামের মূল তথ্য"
+    folder: "data/village"
+    create: true
+    fields:
+      - {label: "হিরো ছবি (বড় ছবি)", name: "photo", widget: "image", required: false}
+      - {label: "গ্রামের পরিচিতি", name: "intro", widget: "string", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ২. সংবাদ
   - name: "news"
     label: "সংবাদ"
     folder: "data/news"
@@ -18,6 +29,7 @@ collections:
       - {label: "ছবি", name: "photo", widget: "image", required: false}
       - {label: "বিস্তারিত", name: "text", widget: "text", required: false}
 
+  # ৩. পরিচিত মুখ
   - name: "people"
     label: "পরিচিত মুখ"
     folder: "data/people"
@@ -26,5 +38,110 @@ collections:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
       - {label: "পদবি", name: "title", widget: "string", required: false}
+      - {label: "ডাকনাম", name: "nick", widget: "string", required: false}
+      - {label: "বাড়ির নাম", name: "house", widget: "string", required: false}
       - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "পরিচিতি", name: "about", widget: "text", required: false}
       - {label: "ফোন", name: "phone", widget: "string", required: false}
+      - {label: "ফেসবুক লিংক", name: "fb", widget: "string", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ৪. মসজিদ
+  - name: "mosque"
+    label: "মসজিদ"
+    folder: "data/mosque"
+    create: true
+    fields:
+      - {label: "নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "বিবরণ", name: "about", widget: "text", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ৫. স্কুল
+  - name: "school"
+    label: "প্রাথমিক বিদ্যালয়"
+    folder: "data/school"
+    create: true
+    fields:
+      - {label: "নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "বিবরণ", name: "about", widget: "text", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ৬. মাদ্রাসা
+  - name: "madrasa"
+    label: "মাদ্রাসা"
+    folder: "data/madrasa"
+    create: true
+    fields:
+      - {label: "নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "বিবরণ", name: "about", widget: "text", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ৭. গোরস্থান
+  - name: "graveyard"
+    label: "গোরস্থান"
+    folder: "data/graveyard"
+    create: true
+    fields:
+      - {label: "নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ৮. বাজার
+  - name: "bazar"
+    label: "বাজার"
+    folder: "data/bazar"
+    create: true
+    fields:
+      - {label: "বাজারের নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "বিবরণ", name: "about", widget: "text", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ৯. মোড়
+  - name: "mor"
+    label: "মোড়"
+    folder: "data/mor"
+    create: true
+    fields:
+      - {label: "মোড়ের নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ১০. স্বেচ্ছাসেবক
+  - name: "volunteers"
+    label: "স্বেচ্ছাসেবক"
+    folder: "data/volunteers"
+    create: true
+    fields:
+      - {label: "নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "বাড়ির নাম", name: "house", widget: "string", required: false}
+      - {label: "ঠিকানা", name: "address", widget: "string", required: false}
+      - {label: "পরিচিতি", name: "about", widget: "text", required: false}
+      - {label: "ফোন", name: "phone", widget: "string", required: false}
+      - {label: "ফেসবুক লিংক", name: "fb", widget: "string", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+
+  # ১১. ডেভেলপার (আপনার নিজের তথ্য)
+  - name: "dev"
+    label: "ডেভেলপার"
+    folder: "data/dev"
+    create: false
+    fields:
+      - {label: "নাম", name: "name", widget: "string"}
+      - {label: "ছবি", name: "photo", widget: "image", required: false}
+      - {label: "পরিচয়", name: "intro", widget: "text", required: false}
+      - {label: "শিক্ষা", name: "edu", widget: "string", required: false}
+      - {label: "ইমেইল", name: "email", widget: "string", required: false}
+      - {label: "ফেসবুক লিংক", name: "fb", widget: "string", required: false}
+      - {label: "ফোন", name: "phone", widget: "string", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
