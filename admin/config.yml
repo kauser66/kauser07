@@ -136,6 +136,7 @@ collections:
     label: "ডেভেলপার"
     folder: "data/dev"
     create: true
+    format: json
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
