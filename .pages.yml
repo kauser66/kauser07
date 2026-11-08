@@ -1,0 +1,66 @@
+media:
+  input: images
+  output: images
+
+content:
+  - name: news
+    label: সংবাদ
+    type: list
+    path: data/news
+    fields:
+      - name: title
+        label: শিরোনাম (আনলিমিটেড লেখা)
+        type: text
+        required: true
+      - name: date
+        label: তারিখ (যেমন: ১০ নভেম্বর ২০২৬)
+        type: text
+      - name: cat
+        label: ক্যাটাগরি (যেমন: স্থানীয়, শিক্ষা, কৃষি)
+        type: text
+      - name: photo
+        label: ছবি (আপলোড করুন)
+        type: image
+      - name: text
+        label: বিস্তারিত খবর (আনলিমিটেড লেখা)
+        type: text
+
+  - name: people
+    label: পরিচিত মুখ
+    type: list
+    path: data/people
+    fields:
+      - name: name
+        label: নাম
+        type: text
+        required: true
+      - name: photo
+        label: ছবি (আপলোড করুন)
+        type: image
+      - name: title
+        label: পদবি
+        type: text
+      - name: address
+        label: ঠিকানা (আনলিমিটেড লেখা)
+        type: text
+      - name: phone
+        label: ফোন নম্বর
+        type: text
+
+  - name: dev
+    label: ডেভেলপার
+    type: file
+    path: data/dev.json
+    fields:
+      - name: name
+        label: নাম
+        type: text
+      - name: photo
+        label: ছবি (আপলোড করুন)
+        type: image
+      - name: email
+        label: ইমেইল
+        type: text
+      - name: fb
+        label: ফেসবুক লিংক
+        type: text
