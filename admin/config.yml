@@ -135,7 +135,7 @@ collections:
   - name: "dev"
     label: "ডেভেলপার"
     folder: "data/dev"
-    create: false
+    create: true
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
