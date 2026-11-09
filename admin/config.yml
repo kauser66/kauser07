@@ -130,7 +130,6 @@ collections:
     folder: "data/volunteers"
     create: true
     format: json
-    slug: index
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: true}
