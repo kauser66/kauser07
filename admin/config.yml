@@ -139,7 +139,7 @@ collections:
       - {label: "পরিচিতি", name: "about", widget: "text", required: true}
       - {label: "ফোন", name: "phone", widget: "string", required: true}
       - {label: "ফেসবুক লিংক", name: "fb", widget: "string", required: true}
-      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: ture}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: true}
 
   - name: "dev"
     label: "ডেভেলপার"
