@@ -14,9 +14,9 @@ collections:
     format: json
     slug: index
     fields:
-      - {label: "হিরো ছবি (বড় ছবি)", name: "photo", widget: "image", required: false}
-      - {label: "গ্রামের পরিচিতি", name: "intro", widget: "string", required: false}
-      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
+      - {label: "হিরো ছবি (বড় ছবি)", name: "photo", widget: "image", required: true}
+      - {label: "গ্রামের পরিচিতি", name: "intro", widget: "string", required: true}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: true}
 
   - name: "news"
     label: "সংবাদ"
