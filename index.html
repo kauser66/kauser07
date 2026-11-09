@@ -80,7 +80,18 @@ async function loadData(){
  const graveyard=await fetchJSON('data/graveyard/index.json')||[];
  const bazar=await fetchJSON('data/bazar/index.json')||[];
  const mor=await fetchJSON('data/mor/index.json')||[];
- const volunteersData = await fetchJSON('data/volunteers/index.json') || [];
+ // volunteers-এর সব ফাইল অটোমেটিক লোড করা (১ থেকে ৫০ পর্যন্ত)
+let volunteersData = [];
+for (let i = 1; i <= 50; i++) {
+    const data = await fetchJSON(`data/volunteers/${i}.json`);
+    if (data) {
+        if (Array.isArray(data)) {
+            volunteersData = volunteersData.concat(data);
+        } else {
+            volunteersData.push(data);
+        }
+    }
+}
 const volunteers = Array.isArray(volunteersData) ? volunteersData : [volunteersData];
  const dev=await fetchJSON('data/dev/index.json')||{name:'মোঃ কাওছার আহম্মেদ',email:'rvallagena2@gmail.com',fb:'https://www.facebook.com/normal.fb.user',photo:'',intro:'',edu:'সিভিল টেকনোলজি (ডিপ্লোমা), সিলেট সরকারি পলিটেকনিক ইনস্টিটিউট',map:'',phone:''};
  window.DATA={village:{...village,ward:'ওয়ার্ড - ৪ নং',union:'ইউনিয়ন - ১১ নং শাহবাজপুর ইউনিয়ন পরিষদ'},member:{},community:{},news,people,mosque,school,madrasa,graveyard,bazar,mor,volunteers,dev};
