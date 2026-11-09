@@ -12,7 +12,7 @@ collections:
     folder: "data/village"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "হিরো ছবি (বড় ছবি)", name: "photo", widget: "image", required: true}
       - {label: "গ্রামের পরিচিতি", name: "intro", widget: "string", required: true}
@@ -23,7 +23,7 @@ collections:
     folder: "data/news"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "শিরোনাম", name: "title", widget: "string"}
       - {label: "তারিখ", name: "date", widget: "string", required: false}
@@ -36,7 +36,7 @@ collections:
     folder: "data/people"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
@@ -54,7 +54,7 @@ collections:
     folder: "data/mosque"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
@@ -67,7 +67,7 @@ collections:
     folder: "data/school"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
@@ -80,7 +80,7 @@ collections:
     folder: "data/madrasa"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
@@ -93,7 +93,7 @@ collections:
     folder: "data/graveyard"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
@@ -105,7 +105,7 @@ collections:
     folder: "data/bazar"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "বাজারের নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
@@ -118,7 +118,7 @@ collections:
     folder: "data/mor"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "মোড়ের নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: false}
@@ -130,29 +130,29 @@ collections:
     folder: "data/volunteers"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: true}
       - {label: "বাড়ির নাম", name: "house", widget: "string", required: true}
       - {label: "ঠিকানা", name: "address", widget: "string", required: true}
       - {label: "পরিচিতি", name: "about", widget: "text", required: true}
-      - {label: "ফোন", name: "phone", widget: "string", required: true}
-      - {label: "ফেসবুক লিংক", name: "fb", widget: "string", required: true}
-      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: ture}
+      - {label: "ফোন", name: "phone", widget: "string", required: false}
+      - {label: "ফেসবুক লিংক", name: "fb", widget: "string", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
 
   - name: "dev"
     label: "ডেভেলপার"
     folder: "data/dev"
     create: true
     format: json
-    slug: index
+    slug: "{{slug}}"
     fields:
       - {label: "নাম", name: "name", widget: "string"}
       - {label: "ছবি", name: "photo", widget: "image", required: true}
-      - {label: "পরিচয়", name: "intro", widget: "text", required: true}
-      - {label: "শিক্ষা", name: "edu", widget: "string", required: true}
-      - {label: "ইমেইল", name: "email", widget: "string", required: true}
-      - {label: "ফেসবুক লিংক", name: "fb", widget: "string", required: true}
-      - {label: "ফোন", name: "phone", widget: "string", required: true}
-      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: true}
+      - {label: "পরিচয়", name: "intro", widget: "text", required: false}
+      - {label: "শিক্ষা", name: "edu", widget: "string", required: false}
+      - {label: "ইমেইল", name: "email", widget: "string", required: false}
+      - {label: "ফেসবুক লিংক", name: "fb", widget: "string", required: false}
+      - {label: "ফোন", name: "phone", widget: "string", required: false}
+      - {label: "গুগল ম্যাপ লিংক", name: "map", widget: "string", required: false}
