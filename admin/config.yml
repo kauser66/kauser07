@@ -1,0 +1,273 @@
+backend:
+  name: github
+  repo: kauser66/kauser07
+  branch: main
+
+media_folder: "images"
+public_folder: "images"
+
+# ছবি নিজে নিজে ছোট ও দ্রুত হবে (সাইট স্মুথ চলবে)। ছবির নাম যা-ই হোক সমস্যা নেই।
+media_libraries:
+  default:
+    config:
+      transformations:
+        raster_image:
+          format: webp
+          quality: 85
+          width: 1000
+          height: 1000
+
+collections:
+  - name: village
+    label: "গ্রামের মূল তথ্য"
+    files:
+      - name: village
+        label: "গ্রামের মূল তথ্য"
+        file: data/village.json
+        fields:
+          - {label: "ওয়ার্ড (যেমন: ওয়ার্ড - ৪ নং)", name: ward, widget: string, required: false}
+          - {label: "ইউনিয়ন", name: union, widget: string, required: false}
+          - {label: "এলাকার জনসংখ্যা (যেমন: ৫২০০)", name: population, widget: string, required: false}
+          - {label: "হিরো ছবি (বড় ছবি)", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+          - {label: "গ্রামের পরিচিতি (ছোট লেখা)", name: intro, widget: text, required: false}
+          - {label: "গ্রামের গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: news
+    label: "সংবাদ (নতুন খবর সবার ওপরে)"
+    files:
+      - name: news
+        label: "সংবাদ (নতুন খবর সবার ওপরে)"
+        file: data/news.json
+        fields:
+          - label: "সংবাদ তালিকা"
+            name: items
+            widget: list
+            label_singular: "সংবাদ"
+            summary: "{{fields.title}}"
+            add_to_top: true
+            fields:
+              - {label: "শিরোনাম", name: title, widget: string, required: true}
+              - {label: "তারিখ (যেমন: ১০ নভেম্বর ২০২৬)", name: date, widget: string, required: false}
+              - {label: "ক্যাটাগরি (যেমন: স্থানীয়)", name: cat, widget: string, required: false}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "বিস্তারিত", name: text, widget: text, required: false}
+
+  - name: member
+    label: "জনপ্রতিনিধি (একজন)"
+    files:
+      - name: member
+        label: "জনপ্রতিনিধি (একজন)"
+        file: data/member.json
+        fields:
+          - {label: "নাম", name: name, widget: string, required: true}
+          - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+          - {label: "পদবি (যেমন: ইউনিয়ন পরিষদ সদস্য)", name: title, widget: string, required: false}
+          - {label: "বাড়ির নাম", name: house, widget: string, required: false}
+          - {label: "ঠিকানা", name: address, widget: string, required: false}
+          - {label: "বিবরণ", name: about, widget: text, required: false}
+          - {label: "ফোন", name: phone, widget: string, required: false}
+          - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
+          - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: people
+    label: "পরিচিত মুখ"
+    files:
+      - name: people
+        label: "পরিচিত মুখ"
+        file: data/people.json
+        fields:
+          - label: "পরিচিত মুখ তালিকা"
+            name: items
+            widget: list
+            label_singular: "ব্যক্তি"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "পদবি", name: title, widget: string, required: false}
+              - {label: "ডাকনাম", name: nick, widget: string, required: false}
+              - {label: "বাড়ির নাম", name: house, widget: string, required: false}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "পরিচিতি / বিবরণ", name: about, widget: text, required: false}
+              - {label: "ফোন", name: phone, widget: string, required: false}
+              - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
+              - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: mosque
+    label: "মসজিদ"
+    files:
+      - name: mosque
+        label: "মসজিদ"
+        file: data/mosque.json
+        fields:
+          - label: "মসজিদ তালিকা"
+            name: items
+            widget: list
+            label_singular: "মসজিদ"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: school
+    label: "প্রাথমিক বিদ্যালয়"
+    files:
+      - name: school
+        label: "প্রাথমিক বিদ্যালয়"
+        file: data/school.json
+        fields:
+          - label: "বিদ্যালয় তালিকা"
+            name: items
+            widget: list
+            label_singular: "বিদ্যালয়"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: madrasa
+    label: "মাদ্রাসা"
+    files:
+      - name: madrasa
+        label: "মাদ্রাসা"
+        file: data/madrasa.json
+        fields:
+          - label: "মাদ্রাসা তালিকা"
+            name: items
+            widget: list
+            label_singular: "মাদ্রাসা"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: graveyard
+    label: "গোরস্থান"
+    files:
+      - name: graveyard
+        label: "গোরস্থান"
+        file: data/graveyard.json
+        fields:
+          - label: "গোরস্থান তালিকা"
+            name: items
+            widget: list
+            label_singular: "গোরস্থান"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: bazar
+    label: "বাজার (দোকানসহ)"
+    files:
+      - name: bazar
+        label: "বাজার (দোকানসহ)"
+        file: data/bazar.json
+        fields:
+          - label: "বাজার তালিকা"
+            name: items
+            widget: list
+            label_singular: "বাজার"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+              - {label: "দোকানসমূহ", name: shops, widget: list, label_singular: "দোকান", summary: "{{fields.name}}", required: false, fields: [{label: "দোকানের নাম", name: name, widget: string, required: true}, {label: "দোকানদারের নাম", name: owner, widget: string, required: false}, {label: "দোকানের ধরন (যেমন: মুদি, ফার্মেসি)", name: type, widget: string, required: false}, {label: "ফোন", name: phone, widget: string, required: false}, {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}, {label: "ঠিকানা", name: address, widget: string, required: false}]}
+
+  - name: mor
+    label: "মোড় (দোকানসহ)"
+    files:
+      - name: mor
+        label: "মোড় (দোকানসহ)"
+        file: data/mor.json
+        fields:
+          - label: "মোড় তালিকা"
+            name: items
+            widget: list
+            label_singular: "মোড়"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "মোড়ের নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+              - {label: "দোকানসমূহ", name: shops, widget: list, label_singular: "দোকান", summary: "{{fields.name}}", required: false, fields: [{label: "দোকানের নাম", name: name, widget: string, required: true}, {label: "দোকানদারের নাম", name: owner, widget: string, required: false}, {label: "দোকানের ধরন (যেমন: মুদি, ফার্মেসি)", name: type, widget: string, required: false}, {label: "ফোন", name: phone, widget: string, required: false}, {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}, {label: "ঠিকানা", name: address, widget: string, required: false}]}
+
+  - name: volunteers
+    label: "স্বেচ্ছাসেবক"
+    files:
+      - name: volunteers
+        label: "স্বেচ্ছাসেবক"
+        file: data/volunteers.json
+        fields:
+          - label: "স্বেচ্ছাসেবক তালিকা"
+            name: items
+            widget: list
+            label_singular: "স্বেচ্ছাসেবক"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "বাড়ির নাম", name: house, widget: string, required: false}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "পরিচিতি / বিবরণ", name: about, widget: text, required: false}
+              - {label: "ফোন", name: phone, widget: string, required: false}
+              - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
+              - {label: "বাড়ির গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: community
+    label: "আমাদের মানুষ"
+    files:
+      - name: community
+        label: "আমাদের মানুষ"
+        file: data/community.json
+        fields:
+          - label: "মানুষের তালিকা"
+            name: items
+            widget: list
+            label_singular: "ব্যক্তি"
+            summary: "{{fields.name}}"
+            fields:
+              - {label: "ধরন", name: category, widget: select, required: false, options: ["সম্মানিত লোক", "হুজুর ও আলেম", "সম্মানী ও প্রবীণ জন"], default: "সম্মানিত লোক"}
+              - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "পদবি", name: title, widget: string, required: false}
+              - {label: "ডাকনাম", name: nick, widget: string, required: false}
+              - {label: "বাড়ির নাম", name: house, widget: string, required: false}
+              - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "পরিচিতি / বিবরণ", name: about, widget: text, required: false}
+              - {label: "ফোন", name: phone, widget: string, required: false}
+              - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
+              - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
+
+  - name: dev
+    label: "ডেভেলপার"
+    files:
+      - name: dev
+        label: "ডেভেলপার"
+        file: data/dev.json
+        fields:
+          - {label: "নাম", name: name, widget: string, required: true}
+          - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+          - {label: "পরিচয়", name: intro, widget: text, required: false}
+          - {label: "শিক্ষা", name: edu, widget: string, required: false}
+          - {label: "ইমেইল", name: email, widget: string, required: false}
+          - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
+          - {label: "ফোন", name: phone, widget: string, required: false}
+          - {label: "বাড়ির গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
