@@ -99,7 +99,10 @@ content:
     label: স্বেচ্ছাসেবক
     type: list
     path: data/volunteers
-    fields:
+    create: true
+    format: json
+    slug: index
+   fields:
       - {name: name, label: নাম, type: text, required: true}
       - {name: photo, label: ছবি, type: image}
       - {name: house, label: বাড়ির নাম, type: text}
