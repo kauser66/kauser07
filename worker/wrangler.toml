@@ -1,0 +1,21 @@
+name = "shahbazpur-submissions"
+main = "src/index.js"
+compatibility_date = "2026-11-14"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "shahbazpur-submissions"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "shahbazpur-submission-photos"
+
+[triggers]
+crons = ["*/15 * * * *"]
+
+[vars]
+GITHUB_REPO = "kauser66/kauser07"
+GITHUB_BRANCH = "main"
+SITE_ORIGIN = "https://kauser66.github.io"
+PHOTO_PUBLIC_BASE = "REPLACE_WITH_R2_PUBLIC_BASE"
