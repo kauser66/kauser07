@@ -28,6 +28,7 @@ collections:
           - {label: "ওয়ার্ড (যেমন: ওয়ার্ড - ৪ নং)", name: ward, widget: string, required: false}
           - {label: "ইউনিয়ন", name: union, widget: string, required: false}
           - {label: "এলাকার জনসংখ্যা (যেমন: ৫২০০)", name: population, widget: string, required: false}
+          - {label: "ওয়েবসাইটের লোগো (হেডারে 'আমাদের এলাকা' এর পাশে)", name: logo, widget: image, required: false, hint: "যেকোনো সময় নতুন লোগো দিতে পারবেন। ফাঁকা রাখলে ডিফল্ট ঘরের লোগো থাকবে। চৌকো (বর্গাকার) ছবি দিলে সবচেয়ে ভালো দেখায়।"}
           - {label: "হিরো ছবি (বড় ছবি)", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
           - {label: "গ্রামের পরিচিতি (ছোট লেখা)", name: intro, widget: text, required: false}
           - {label: "গ্রামের গুগল ম্যাপ লিংক", name: map, widget: string, required: false}

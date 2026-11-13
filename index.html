@@ -38,7 +38,7 @@ a{text-decoration:none;color:inherit}img{max-width:100%;display:block}
 .header-main{background:#fff;padding:15px 0;border-bottom:2px solid var(--red)}
 .header-main .container{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px}
 .logo-area{display:flex;align-items:center;gap:12px}
-.logo-area img{width:65px;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .5s cubic-bezier(.175,.885,.32,1.275)}
+.logo-area img{width:65px;height:65px;object-fit:cover;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .5s cubic-bezier(.175,.885,.32,1.275)}
 .logo-area:hover img{transform:rotate(15deg) scale(1.1)}
 .logo-text h1{font-size:34px;margin-bottom:-5px;font-weight:700}
 .logo-text h1 span{color:var(--red)}
@@ -180,7 +180,7 @@ img[data-s]{opacity:0;transition:opacity .5s}img[data-s].ok{opacity:1}
 
 <header class="header-main"><div class="container">
   <div class="logo-area">
-    <img src="https://cdn-icons-png.flaticon.com/512/3443/3443338.png" alt="Logo">
+    <img id="site-logo" src="images/logo.svg" alt="Logo">
     <div class="logo-text"><h1>আমাদের <span>এলাকা</span></h1><p>শাহবাজপুর পূর্বপাড়া, জামালপুর সদর, জামালপুর</p></div>
   </div>
   <div class="search-box"><input type="text" id="q" placeholder="নাম, দোকান, প্রতিষ্ঠান খুঁজুন..."><button type="button"><i class="fas fa-search"></i></button></div>
@@ -207,7 +207,7 @@ img[data-s]{opacity:0;transition:opacity .5s}img[data-s].ok{opacity:1}
    ===================================================================== */
 var REPO='kauser66/kauser07',BR='main',RAW='https://raw.githubusercontent.com/'+REPO+'/'+BR+'/';
 var DATA={
-  village:{ward:'ওয়ার্ড - ৪ নং',union:'ইউনিয়ন - ১১ নং শাহবাজপুর ইউনিয়ন পরিষদ',population:'',photo:'',map:'',intro:''},
+  village:{ward:'ওয়ার্ড - ৪ নং',union:'ইউনিয়ন - ১১ নং শাহবাজপুর ইউনিয়ন পরিষদ',population:'',logo:'',photo:'',map:'',intro:''},
   member:{title:'ইউনিয়ন পরিষদ সদস্য'},
   news:[],people:[],mosque:[],school:[],madrasa:[],graveyard:[],bazar:[],mor:[],volunteers:[],community:[],
   dev:{name:'মোঃ কাওছার আহম্মেদ',photo:'images/1000603258.jpg',intro:'আমি এই ওয়েবসাইটের নির্মাতা',edu:'সিভিল টেকনোলজি (ডিপ্লোমা), সিলেট সরকারি পলিটেকনিক ইনস্টিটিউট',email:'rvallagena2@gmail.com',fb:'https://www.facebook.com/normal.fb.user',phone:'',map:''}
@@ -226,6 +226,20 @@ function imgErr(i){
   if(n>=6||/^(https?:|data:)/.test(s)){i.style.display='none';return}
   i.setAttribute('data-r',n+1);
   setTimeout(function(){i.src=(n%2===0?RAW:'')+s+(n>1?'?r='+n:'')},n===0?0:10000*n);
+}
+
+/* হেডারের লোগো: CMS এর "ওয়েবসাইটের লোগো" ঘরে ছবি দিলে সেটা বসবে, না দিলে ডিফল্ট ঘরের লোগো থাকবে */
+function setLogo(){
+  var l=DATA.village&&DATA.village.logo,i=document.getElementById('site-logo');
+  if(!i||!l)return;
+  var u=imgSrc(l),def=i.getAttribute('src'),t=0;
+  i.onerror=function(){
+    t++;
+    if(t===1){i.src=RAW+u}
+    else if(t===2){setTimeout(function(){i.src=u+'?r=1'},8000)}
+    else{i.onerror=null;i.src=def}
+  };
+  i.src=u;
 }
 
 var FIELDS=[['title','পদবি'],['nick','ডাকনাম'],['house','বাড়ির নাম'],['type','ধরন'],['owner','দোকানদার'],['address','ঠিকানা']];
@@ -391,7 +405,7 @@ function load(){
   return Promise.all(jobs);
 }
 var shown=false;
-function render(){shown=true;try{build();motion();wire()}catch(e){console.error(e)}}
+function render(){shown=true;try{build();setLogo();motion();wire()}catch(e){console.error(e)}}
 var tm=setTimeout(function(){if(!shown)render()},7000);
 load().then(function(){clearTimeout(tm);render()},function(){clearTimeout(tm);render()});
 </script>
