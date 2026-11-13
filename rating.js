@@ -6,7 +6,7 @@
 'use strict';
 
 /* Web3Forms Access Key এখানে বসাবেন (web3forms.com থেকে পাওয়া)। ফাঁকা থাকলে ফর্মে "শীঘ্রই চালু হবে" দেখাবে। */
-var W3F_KEY='';
+var W3F_KEY='93a32002-2e4b-476b-8d2d-ec9c78fb50ae';
 
 var RATINGS={};
 
