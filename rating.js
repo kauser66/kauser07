@@ -140,5 +140,30 @@ function init(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 
+/* স্বাগতম পপআপ: সাইটে ঢুকলেই ২.৫ সেকেন্ড দেখায়, তারপর নিজে থেকে মিলিয়ে যায় (ট্যাপ করলে আগেই বন্ধ হয়) */
+(function(){
+  var wcss=''+
+  '#wl-ov{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,18,32,.72);backdrop-filter:blur(3px);opacity:1;transition:opacity .5s}'+
+  '#wl-ov.out{opacity:0;pointer-events:none}'+
+  '#wl-box{position:relative;overflow:hidden;max-width:440px;width:100%;text-align:center;color:#fff;border-radius:20px;padding:34px 24px 32px;background:linear-gradient(135deg,#121e31,#7f1d1d,#d32f2f);box-shadow:0 20px 60px rgba(0,0,0,.55);animation:popin .6s both}'+
+  '#wl-box i{display:block;font-size:46px;color:#ffeb3b;margin-bottom:14px;animation:floating 2s ease-in-out infinite}'+
+  '#wl-box h2{font-size:26px;line-height:1.5;font-weight:700}'+
+  '#wl-box h2 span{color:#ffcdd2}'+
+  '#wl-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:#ffeb3b;transform-origin:left;animation:wlbar 2.5s linear forwards}'+
+  '@keyframes wlbar{to{transform:scaleX(0)}}';
+  var ws=document.createElement('style');ws.textContent=wcss;document.head.appendChild(ws);
+  var wo=document.createElement('div');wo.id='wl-ov';
+  wo.innerHTML=`<div id='wl-box'><i class='fas fa-house-chimney'></i><h2>শাহবাজপুর পূর্বপাড়ার <span>ভার্চুয়াল জগৎ</span>-এ আপনাকে স্বাগতম</h2><div id='wl-bar'></div></div>`;
+  document.body.appendChild(wo);
+  var gone=false;
+  function hide(){
+    if(gone)return;gone=true;
+    wo.classList.add('out');
+    setTimeout(function(){if(wo.parentNode)wo.parentNode.removeChild(wo)},600);
+  }
+  wo.addEventListener('click',hide);
+  setTimeout(hide,2500);
+})();
+
 /* দর্শকের পোস্ট সুবিধা (visitor.js) লোড করা */
 (function(){var s=document.createElement('script');s.src='visitor.js';document.body.appendChild(s)})();
