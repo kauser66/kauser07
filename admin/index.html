@@ -8,13 +8,14 @@
 <body>
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
   <script>
-    /* CMS এর ভেতরে "পোস্ট অনুমোদন" পেজ: দর্শকের পোস্ট অনুমোদন / বাতিল / মুছুন */
+    /* CMS এর ভেতরে "পোস্ট অনুমোদন" পেজ: দর্শকের পোস্ট অনুমোদন / বাতিল / মুছুন
+       প্যানেলটা Cloudflare Worker এর সাইটে থাকে, তাই পুরো ঠিকানা দেওয়া হয়েছে */
     try {
       CMS.registerCustomPage({
         id: 'approval',
         label: 'পোস্ট অনুমোদন',
         icon: 'inbox',
-        url: '/moderate.html'
+        url: 'https://ourvillage.rvallagena2.workers.dev/moderate.html'
       });
     } catch (e) {
       console.error(e);
