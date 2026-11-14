@@ -188,7 +188,14 @@ async function adminGate(request, env) {
   const now = Math.floor(Date.now() / 1000);
   const row = await env.DB.prepare('SELECT COUNT(*) AS c FROM admin_fails WHERE ip_hash = ?1 AND ts > ?2').bind(ih, now - 3600).first();
   if (row && row.c >= 10) return err('too_many', 429);
-  const given = await crypto.subtle.digest('SHA-256', ENC.encode(request.headers.get('X-Admin-Key') || ''));
+  /* পাসওয়ার্ড হেডারে এনকোড করা অবস্থায় আসে (বাংলা অক্ষর থাকলেও চলবে) */
+  let sent = request.headers.get('X-Admin-Key') || '';
+  try {
+    sent = decodeURIComponent(sent);
+  } catch (e) {
+    /* সরাসরি মানই ধরা হবে */
+  }
+  const given = await crypto.subtle.digest('SHA-256', ENC.encode(sent));
   const real = await crypto.subtle.digest('SHA-256', ENC.encode(env.ADMIN_KEY));
   if (!crypto.subtle.timingSafeEqual(given, real)) {
     await env.DB.prepare('DELETE FROM admin_fails WHERE ts < ?1').bind(now - 86400).run();
