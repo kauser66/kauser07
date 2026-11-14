@@ -10,6 +10,9 @@ const KEY_RE = /^[0-9a-f-]{36}\.jpg$/;
 const MAX_IMG = 1500000;
 const DAYS_OK = [1, 3, 7, 15, 30];
 
+/* যে সাইট থেকে API ডাকা যাবে (GitHub Pages ও Worker নিজে) */
+const ALLOWED_ORIGINS = ['https://kauser66.github.io', 'https://ourvillage.rvallagena2.workers.dev'];
+
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data), {
     status,
@@ -32,11 +35,21 @@ async function ipHash(request) {
 function sameOrigin(request, url) {
   const o = request.headers.get('Origin');
   if (!o) return true;
+  if (ALLOWED_ORIGINS.includes(o)) return true;
   try {
     return new URL(o).host === url.host;
   } catch (e) {
     return false;
   }
+}
+function corsHeaders(origin) {
+  return {
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Key',
+    'Access-Control-Max-Age': '86400',
+    Vary: 'Origin',
+  };
 }
 function bnDate(s) {
   try {
@@ -266,24 +279,41 @@ async function handleAdmin(request, env, url) {
   return err('not_found', 404);
 }
 
+async function route(request, env, url) {
+  const p = url.pathname;
+  if (p === '/api/ratings' && request.method === 'GET') return handleRatings(env);
+  if (p === '/api/rate' && request.method === 'POST') return handleRate(request, env, url);
+  if (p === '/api/content' && request.method === 'GET') return handleContent(env);
+  if (p === '/api/submit' && request.method === 'POST') {
+    if (!sameOrigin(request, url)) return err('forbidden', 403);
+    return handleSubmit(request, env);
+  }
+  if (p.startsWith('/api/photo/') && request.method === 'GET') return handlePhoto(p, env);
+  if (p.startsWith('/api/admin/')) return handleAdmin(request, env, url);
+  return err('not_found', 404);
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    const p = url.pathname;
-    if (!p.startsWith('/api/')) return env.ASSETS.fetch(request);
-    try {
-      if (p === '/api/ratings' && request.method === 'GET') return await handleRatings(env);
-      if (p === '/api/rate' && request.method === 'POST') return await handleRate(request, env, url);
-      if (p === '/api/content' && request.method === 'GET') return await handleContent(env);
-      if (p === '/api/submit' && request.method === 'POST') {
-        if (!sameOrigin(request, url)) return err('forbidden', 403);
-        return await handleSubmit(request, env);
-      }
-      if (p.startsWith('/api/photo/') && request.method === 'GET') return await handlePhoto(p, env);
-      if (p.startsWith('/api/admin/')) return await handleAdmin(request, env, url);
-      return err('not_found', 404);
-    } catch (e) {
-      return err('server_error', 500);
+    if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
+
+    const origin = request.headers.get('Origin');
+    const cors = !!origin && ALLOWED_ORIGINS.includes(origin);
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: cors ? corsHeaders(origin) : {} });
     }
+
+    let res;
+    try {
+      res = await route(request, env, url);
+    } catch (e) {
+      res = err('server_error', 500);
+    }
+    if (!cors) return res;
+    const out = new Response(res.body, res);
+    const h = corsHeaders(origin);
+    for (const k of Object.keys(h)) out.headers.set(k, h[k]);
+    return out;
   },
 };

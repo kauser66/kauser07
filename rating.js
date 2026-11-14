@@ -1,3 +1,18 @@
+/* অন্য ঠিকানা (যেমন github.io) থেকে সাইট খুললেও পোস্ট/রেটিং যেন Cloudflare Worker এ যায় */
+(function(){
+  var W='https://ourvillage.rvallagena2.workers.dev';
+  if(location.origin===W)return;
+  var of=window.fetch;
+  window.fetch=function(u,o){
+    if(typeof u==='string'&&u.indexOf('/api/')===0)u=W+u;
+    return of.call(this,u,o);
+  };
+  var oi=window.imgSrc;
+  if(typeof oi==='function'){
+    window.imgSrc=function(s){s=String(s||'');return s.indexOf('/api/photo/')===0?W+s:oi(s)};
+  }
+})();
+
 /* =====================================================================
    rating.js — স্বেচ্ছাসেবকের রেটিং (পপআপ + গড় রেটিং)
    রেটিং জমা থাকে Cloudflare D1 ডাটাবেসে (/api/rate, /api/ratings)।
