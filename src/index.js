@@ -10,9 +10,6 @@ const KEY_RE = /^[0-9a-f-]{36}\.jpg$/;
 const MAX_IMG = 1500000;
 const DAYS_OK = [1, 3, 7, 15, 30];
 
-/* যে সাইট থেকে API ডাকা যাবে (GitHub Pages ও Worker নিজে) */
-const ALLOWED_ORIGINS = ['https://kauser66.github.io', 'https://ourvillage.rvallagena2.workers.dev'];
-
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data), {
     status,
@@ -32,19 +29,10 @@ async function sha256(text) {
 async function ipHash(request) {
   return (await sha256('ip-v1:' + (request.headers.get('CF-Connecting-IP') || 'x'))).slice(0, 32);
 }
-function sameOrigin(request, url) {
-  const o = request.headers.get('Origin');
-  if (!o) return true;
-  if (ALLOWED_ORIGINS.includes(o)) return true;
-  try {
-    return new URL(o).host === url.host;
-  } catch (e) {
-    return false;
-  }
-}
+/* সাইট যে ঠিকানা থেকেই খোলা হোক, পাবলিক API (পোস্ট/রেটিং) কাজ করবে। অনুমোদন API পাসওয়ার্ড দিয়ে সুরক্ষিত। */
 function corsHeaders(origin) {
   return {
-    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Origin': origin || '*',
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Key',
     'Access-Control-Max-Age': '86400',
@@ -85,8 +73,7 @@ async function handleRatings(env) {
   return json(out, 200, { 'Cache-Control': 'public, max-age=30' });
 }
 
-async function handleRate(request, env, url) {
-  if (!sameOrigin(request, url)) return err('forbidden', 403);
+async function handleRate(request, env) {
   let body;
   try {
     body = await request.json();
@@ -282,12 +269,9 @@ async function handleAdmin(request, env, url) {
 async function route(request, env, url) {
   const p = url.pathname;
   if (p === '/api/ratings' && request.method === 'GET') return handleRatings(env);
-  if (p === '/api/rate' && request.method === 'POST') return handleRate(request, env, url);
+  if (p === '/api/rate' && request.method === 'POST') return handleRate(request, env);
   if (p === '/api/content' && request.method === 'GET') return handleContent(env);
-  if (p === '/api/submit' && request.method === 'POST') {
-    if (!sameOrigin(request, url)) return err('forbidden', 403);
-    return handleSubmit(request, env);
-  }
+  if (p === '/api/submit' && request.method === 'POST') return handleSubmit(request, env);
   if (p.startsWith('/api/photo/') && request.method === 'GET') return handlePhoto(p, env);
   if (p.startsWith('/api/admin/')) return handleAdmin(request, env, url);
   return err('not_found', 404);
@@ -299,9 +283,8 @@ export default {
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(request);
 
     const origin = request.headers.get('Origin');
-    const cors = !!origin && ALLOWED_ORIGINS.includes(origin);
     if (request.method === 'OPTIONS') {
-      return new Response(null, { status: 204, headers: cors ? corsHeaders(origin) : {} });
+      return new Response(null, { status: 204, headers: corsHeaders(origin) });
     }
 
     let res;
@@ -310,7 +293,6 @@ export default {
     } catch (e) {
       res = err('server_error', 500);
     }
-    if (!cors) return res;
     const out = new Response(res.body, res);
     const h = corsHeaders(origin);
     for (const k of Object.keys(h)) out.headers.set(k, h[k]);
