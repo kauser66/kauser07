@@ -1,0 +1,17 @@
+{
+  "name": "ourvillage",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-13",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "shahbajpur-db",
+      "database_id": "a87c2eff-7a26-4c5a-90f5-308a23d74cb6"
+    }
+  ]
+}
