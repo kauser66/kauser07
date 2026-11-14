@@ -139,3 +139,6 @@ function init(){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
+
+/* দর্শকের পোস্ট সুবিধা (visitor.js) লোড করা */
+(function(){var s=document.createElement('script');s.src='visitor.js';document.body.appendChild(s)})();

@@ -2,6 +2,7 @@
   "name": "ourvillage",
   "main": "src/index.js",
   "compatibility_date": "2026-11-13",
+  "keep_vars": true,
   "assets": {
     "directory": "./",
     "binding": "ASSETS",
@@ -12,6 +13,12 @@
       "binding": "DB",
       "database_name": "shahbajpur-db",
       "database_id": "a87c2eff-7a26-4c5a-90f5-308a23d74cb6"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "PHOTOS",
+      "bucket_name": "shahbajpur-photos"
     }
   ]
 }

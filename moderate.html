@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang='bn'>
+<head>
+<meta charset='UTF-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+<meta name='robots' content='noindex,nofollow'>
+<title>অনুমোদন প্যানেল</title>
+<link rel='stylesheet' href='https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap'>
+<style>
+:root{--red:#d32f2f;--dark:#121e31;--bd:#e0e0e0;--bg:#f0f2f5}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif}
+body{background:var(--bg);color:#222;line-height:1.6}
+header{background:var(--dark);color:#fff;padding:14px 16px;border-bottom:3px solid var(--red);display:flex;justify-content:space-between;align-items:center;gap:10px}
+header h1{font-size:20px}
+header a{color:#ff8a80;font-size:14px;text-decoration:none}
+main{max-width:760px;margin:0 auto;padding:16px}
+.login{background:#fff;border-radius:14px;padding:24px;box-shadow:0 4px 15px rgba(0,0,0,.08);margin-top:30px}
+.login h2{margin-bottom:12px}
+input[type=password]{display:block;width:100%;padding:11px 14px;border:2px solid var(--bd);border-radius:10px;font-size:16px;margin-bottom:12px;outline:none}
+input[type=password]:focus{border-color:var(--red)}
+button{font-size:15px;font-weight:600;border:none;border-radius:24px;padding:9px 18px;cursor:pointer}
+.go{background:var(--red);color:#fff}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{background:#fff;color:var(--dark);border:2px solid var(--bd)}
+.tabs button.on{background:var(--red);color:#fff;border-color:var(--red)}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 3px 12px rgba(0,0,0,.07)}
+.tag{display:inline-block;background:var(--dark);color:#fff;font-size:13px;padding:2px 12px;border-radius:20px;margin-bottom:8px}
+.tag.n{background:var(--red)}
+.row{font-size:15px;margin-bottom:4px;word-break:break-word;white-space:pre-wrap}
+.row b{color:var(--red)}
+.row a{color:#0b57d0}
+.photos{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.photos img{width:130px;height:130px;object-fit:cover;border-radius:10px;border:2px solid var(--bd);background:#eee}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.acts select{padding:8px 10px;border:2px solid var(--bd);border-radius:10px;font-size:14px}
+.ok{background:#198754;color:#fff}
+.no{background:var(--red);color:#fff}
+.del{background:#fff;color:var(--red);border:2px solid var(--red)}
+.msg{padding:14px;text-align:center;color:#666}
+.err{color:var(--red);font-weight:600;margin-bottom:10px}
+</style>
+</head>
+<body>
+<header><h1>অনুমোদন প্যানেল</h1><div><a href='/'>← সাইটে ফিরুন</a> &nbsp; <a href='#' id='out'>বের হোন</a></div></header>
+<main id='app'></main>
+<script>
+var KEY=sessionStorage.getItem('mk')||'',VIEW='pending';
+var app=document.getElementById('app');
+var TABS=[['pending','অপেক্ষমাণ'],['live','সাইটে চালু'],['archive','আর্কাইভ'],['rejected','বাতিল']];
+function h(t,a,k){
+  var e=document.createElement(t);a=a||{};
+  for(var i in a){
+    if(i==='text')e.textContent=a[i];
+    else if(i==='cls')e.className=a[i];
+    else if(i.slice(0,2)==='on')e[i]=a[i];
+    else e.setAttribute(i,a[i]);
+  }
+  (k||[]).forEach(function(c){if(c)e.appendChild(typeof c==='string'?document.createTextNode(c):c)});
+  return e;
+}
+function api(path,opt){
+  opt=opt||{};
+  opt.headers=Object.assign({'X-Admin-Key':KEY},opt.headers||{});
+  return fetch(path,opt);
+}
+function when(s){
+  if(!s)return '';
+  try{return new Date(s.replace(' ','T')+'Z').toLocaleString('bn-BD',{timeZone:'Asia/Dhaka',dateStyle:'medium',timeStyle:'short'})}catch(e){return s}
+}
+document.getElementById('out').onclick=function(e){e.preventDefault();KEY='';sessionStorage.removeItem('mk');loginView('')};
+
+function loginView(note){
+  app.innerHTML='';
+  var inp=h('input',{type:'password',placeholder:'গোপন পাসওয়ার্ড লিখুন',autocomplete:'current-password'});
+  var go=h('button',{cls:'go',text:'প্রবেশ করুন',onclick:function(){KEY=inp.value;sessionStorage.setItem('mk',KEY);load()}});
+  inp.onkeydown=function(e){if(e.key==='Enter')go.onclick()};
+  app.appendChild(h('div',{cls:'login'},[h('h2',{text:'ডেভেলপার প্রবেশ'}),note?h('div',{cls:'err',text:note}):null,inp,go]));
+}
+
+function load(){
+  app.innerHTML='';app.appendChild(h('div',{cls:'msg',text:'লোড হচ্ছে...'}));
+  api('/api/admin/list?view='+VIEW).then(function(r){
+    if(r.status===401){KEY='';sessionStorage.removeItem('mk');return loginView('পাসওয়ার্ড ভুল হয়েছে।')}
+    if(r.status===503)return loginView('ADMIN_KEY এখনো Cloudflare এ সেট করা হয়নি।');
+    if(r.status===429)return loginView('অনেকবার ভুল হয়েছে, ১ ঘণ্টা পরে চেষ্টা করুন।');
+    return r.json().then(show);
+  }).catch(function(){loginView('সার্ভারে যুক্ত হওয়া যাচ্ছে না।'))});
+}
+
+function show(d){
+  app.innerHTML='';
+  var tabs=h('div',{cls:'tabs'});
+  TABS.forEach(function(t){
+    var label=t[1]+(t[0]==='pending'?' ('+d.pending+')':'');
+    tabs.appendChild(h('button',{cls:VIEW===t[0]?'on':'',text:label,onclick:function(){VIEW=t[0];load()}}));
+  });
+  app.appendChild(tabs);
+  if(!d.items.length){app.appendChild(h('div',{cls:'msg',text:'এখানে কিছু নেই।'}));return}
+  d.items.forEach(function(it){app.appendChild(card(it))});
+}
+
+function row(label,val){return val?h('div',{cls:'row'},[h('b',{text:label+': '}),String(val)]):null}
+function link(label,url){
+  if(!url)return null;
+  var ok=url.indexOf('http://')===0||url.indexOf('https://')===0;
+  return h('div',{cls:'row'},[h('b',{text:label+': '}),ok?h('a',{href:url,target:'_blank',rel:'noopener noreferrer',text:url}):String(url)]);
+}
+
+function act(it,action,days){
+  api('/api/admin/decide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:it.id,action:action,days:days})})
+    .then(function(r){if(!r.ok)throw 0;load()}).catch(function(){alert('কাজটি হয়নি, আবার চেষ্টা করুন।')});
+}
+function remove(it){
+  if(!confirm('তালিকা থেকে স্থায়িভাবে মুছে ফেলবেন? আর ফেরত আনা যাবে না।'))return;
+  api('/api/admin/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:it.id})})
+    .then(function(r){if(!r.ok)throw 0;load()}).catch(function(){alert('মুছতে পারা যায়নি।')});
+}
+
+function card(it){
+  var news=it.kind==='news';
+  var c=h('div',{cls:'card'});
+  c.appendChild(h('span',{cls:'tag'+(news?' n':''),text:news?'খবর':'স্বেচ্ছাসেবক'}));
+  if(news){
+    [row('শিরোনাম',it.title),row('বিস্তারিত',it.body),row('ক্যাটাগরি',it.cat),row('অনুরোধকৃত মেয়াদ',it.days?it.days+' দিন':'')].forEach(function(r){if(r)c.appendChild(r)});
+  }else{
+    [row('নাম',it.name),row('বাড়ির নাম',it.house),row('ঠিকানা',it.address),row('পরিচিতি',it.body),row('ফোন',it.phone),link('ফেসবুক',it.fb),link('ম্যাপ',it.map)].forEach(function(r){if(r)c.appendChild(r)});
+  }
+  c.appendChild(row('পোস্টকারী',it.submitter));
+  c.appendChild(row('জমা দেওয়ার সময়',when(it.created_at)));
+  if(it.status==='approved'&&news&&it.expires_at)c.appendChild(row('মেয়াদ শেষ',when(it.expires_at)));
+  var ph=h('div',{cls:'photos'});
+  [it.photo1,it.photo2].forEach(function(k){
+    if(!k)return;
+    var im=h('img',{alt:''});ph.appendChild(im);
+    api('/api/admin/photo/'+k).then(function(r){return r.blob()}).then(function(b){im.src=URL.createObjectURL(b)}).catch(function(){});
+  });
+  if(ph.firstChild)c.appendChild(ph);
+
+  var a=h('div',{cls:'acts'});
+  var sel=null;
+  if(news&&(it.status!=='approved'||VIEW==='archive')){
+    sel=h('select',{});
+    [[1,'১ দিন'],[3,'৩ দিন'],[7,'৭ দিন'],[15,'১৫ দিন'],[30,'৩০ দিন']].forEach(function(o){
+      var op=h('option',{value:o[0],text:'মেয়াদ: '+o[1]});if(o[0]===(it.days||7))op.selected=true;sel.appendChild(op);
+    });
+    a.appendChild(sel);
+  }
+  if(it.status!=='approved'||VIEW==='archive'){
+    a.appendChild(h('button',{cls:'ok',text:VIEW==='archive'?'✅ আবার চালু করুন':'✅ অনুমোদন',onclick:function(){act(it,'approve',sel?sel.value:null)}}));
+  }
+  if(it.status!=='rejected'&&VIEW!=='archive'){
+    a.appendChild(h('button',{cls:'no',text:it.status==='approved'?'↩ সরিয়ে নিন (বাতিল)':'❌ বাতিল',onclick:function(){act(it,'reject')}}));
+  }
+  a.appendChild(h('button',{cls:'del',text:'🗑 মুছুন',onclick:function(){remove(it)}}));
+  c.appendChild(a);
+  return c;
+}
+
+if(KEY)load();else loginView('');
+</script>
+</body>
+</html>
