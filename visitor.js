@@ -1,6 +1,7 @@
 /* =====================================================================
    visitor.js — দর্শকের পোস্ট (খবর / স্বেচ্ছাসেবক যোগ)
    + অনুমোদিত পোস্ট সাইটের তথ্যের সাথে মিশিয়ে দেখানো
+   + হোমস্ক্রিনে ইনস্টলের প্রস্তাব (৫ সেকেন্ড পর নিজে সরে যায়)
    rating.js থেকে লোড হয়। বাকি সাইট বদলায় না।
    ===================================================================== */
 (function(){
@@ -44,7 +45,11 @@ if(mc&&'MutationObserver' in window){
 
 /* ===== ২) পোস্ট করার পপআপ ===== */
 var css=`
-#vp-fab{position:fixed;left:16px;bottom:16px;z-index:900;background:var(--red);color:#fff;border:none;border-radius:30px;padding:12px 20px;font-size:16px;font-weight:600;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.35);display:flex;align-items:center;gap:8px;animation:glow 2s infinite}
+@property --vpa{syntax:'<angle>';initial-value:0deg;inherits:false}
+#vp-fab{--vpa:0deg;position:fixed;left:16px;bottom:16px;z-index:900;background:var(--red);color:#fff;border:none;border-radius:30px;padding:12px 22px;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;animation:none;box-shadow:0 0 14px rgba(0,229,255,.4),0 6px 18px rgba(0,0,0,.4)}
+#vp-fab::before,#vp-fab::after{content:'';position:absolute;inset:-5px;border-radius:36px;padding:2px;pointer-events:none;background:conic-gradient(from var(--vpa),transparent 0 48%,#00e5ff 68%,#ffffff 80%,#ff2bd6 92%,transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:vpSpin 2.2s linear infinite}
+#vp-fab::after{padding:3px;filter:blur(5px);opacity:.95}
+@keyframes vpSpin{to{--vpa:360deg}}
 #vp-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3600;display:none;align-items:flex-start;justify-content:center;padding:15px;overflow:auto}
 #vp-ov.on{display:flex}
 #vp-box{background:#fff;border-radius:14px;max-width:560px;width:100%;margin:auto;position:relative;animation:popin .4s both;padding:22px 20px 24px}
@@ -69,6 +74,19 @@ var css=`
 .vp-back{background:none;border:none;color:var(--light);cursor:pointer;font-size:14px;margin-bottom:4px;padding:0}
 .vp-pend{display:inline-block;background:#fff8e1;border:1px solid #ffe082;color:#8a6100;border-radius:20px;padding:6px 18px;font-weight:600;margin:8px 0}
 .vp-f .btn{margin-top:16px}
+#vp-inst{position:fixed;left:50%;bottom:86px;z-index:4000;width:calc(100% - 28px);max-width:420px;display:flex;align-items:center;gap:12px;padding:12px 14px 14px;border-radius:16px;color:#fff;background:linear-gradient(135deg,#121e31,#3b1220);border:1px solid rgba(255,255,255,.18);box-shadow:0 14px 40px rgba(0,0,0,.5);overflow:hidden;transform:translate(-50%,24px);opacity:0;animation:vpIn .45s cubic-bezier(.16,1,.3,1) forwards}
+#vp-inst.out{animation:vpOut .4s ease-in forwards}
+@keyframes vpIn{to{transform:translate(-50%,0);opacity:1}}
+@keyframes vpOut{from{transform:translate(-50%,0);opacity:1}to{transform:translate(-50%,16px);opacity:0}}
+#vp-inst>i.fa-mobile-screen-button{font-size:28px;color:#ffd54f;flex:0 0 auto}
+#vp-inst .vp-it{flex:1;min-width:0;line-height:1.35}
+#vp-inst .vp-it b{display:block;font-size:15.5px}
+#vp-inst .vp-it span{font-size:13px;color:#ffcdd2}
+#vp-inst button{flex:0 0 auto;border:none;cursor:pointer;border-radius:22px;font-weight:700}
+#vp-inst .vp-go{background:#ffd54f;color:#121e31;padding:9px 16px;font-size:15px}
+#vp-inst .vp-no{background:rgba(255,255,255,.14);color:#fff;width:30px;height:30px;font-size:16px;padding:0}
+#vp-inst .vp-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,#ffd54f,#ff5252);transform-origin:left;animation:vpBar 5s linear forwards}
+@keyframes vpBar{to{transform:scaleX(0)}}
 `;
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
@@ -187,5 +205,46 @@ function formStep(kind){
 function done(){
   box.innerHTML=X+`<div style='text-align:center;padding:10px 0'><div style='font-size:56px;color:#198754'><i class='fas fa-circle-check'></i></div><h3 style='padding:0'>ধন্যবাদ!</h3><p>আপনার পোস্টটি জমা হয়েছে।</p><div class='vp-pend'><i class='fas fa-hourglass-half'></i> অনুমোদনের অপেক্ষায় (Pending)</div><p class='vp-hint'>ডেভেলপার দেখে অনুমোদন দিলে পোস্টটি সাইটে প্রকাশ হবে।</p><button class='btn' type='button' id='vp-ok'>ঠিক আছে</button></div>`;
   el('vp-ok').onclick=closeBox;
+}
+
+/* ===== ৩) হোমস্ক্রিনে অ্যাপ হিসেবে ইনস্টল (PWA) — স্বাগতম পপআপের পর ২ সেকেন্ড দেখায়, ৫ সেকেন্ড পর নিজে সরে যায় ===== */
+function standalone(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}
+if(!standalone()){
+  if(!document.querySelector('link[rel=manifest]')){
+    var ml=document.createElement('link');ml.rel='manifest';ml.href='manifest.webmanifest';document.head.appendChild(ml);
+  }
+  if(!document.querySelector('meta[name=theme-color]')){
+    var tc=document.createElement('meta');tc.name='theme-color';tc.content='#d32f2f';document.head.appendChild(tc);
+  }
+  if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(function(){})}
+
+  var deferred=null,shownInst=false,afterWelcome=false;
+  var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+  function showInstall(){
+    if(shownInst||!afterWelcome)return;
+    if(!deferred&&!isIOS)return;
+    shownInst=true;
+    var b=document.createElement('div');b.id='vp-inst';
+    b.innerHTML=deferred
+      ?`<i class='fas fa-mobile-screen-button'></i><div class='vp-it'><b>হোমস্ক্রিনে অ্যাপ হিসেবে রাখুন</b><span>এক ট্যাপে সাইট খুলুন</span></div><button class='vp-go' type='button'>ইনস্টল</button><button class='vp-no' type='button' aria-label='বন্ধ করুন'>&times;</button><i class='vp-bar'></i>`
+      :`<i class='fas fa-mobile-screen-button'></i><div class='vp-it'><b>হোমস্ক্রিনে রাখুন</b><span>শেয়ার বাটন চেপে “Add to Home Screen” বেছে নিন</span></div><button class='vp-no' type='button' aria-label='বন্ধ করুন'>&times;</button><i class='vp-bar'></i>`;
+    document.body.appendChild(b);
+    var gone=false;
+    function hideInst(){
+      if(gone)return;gone=true;
+      b.classList.add('out');
+      setTimeout(function(){if(b.parentNode)b.parentNode.removeChild(b)},450);
+    }
+    var no=b.querySelector('.vp-no');if(no)no.onclick=hideInst;
+    var go=b.querySelector('.vp-go');
+    if(go)go.onclick=function(){
+      hideInst();
+      if(deferred){deferred.prompt();deferred.userChoice.then(function(){deferred=null}).catch(function(){})}
+    };
+    setTimeout(hideInst,5000);
+  }
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;showInstall()});
+  window.addEventListener('appinstalled',function(){deferred=null;var x=document.getElementById('vp-inst');if(x&&x.parentNode)x.parentNode.removeChild(x)});
+  setTimeout(function(){afterWelcome=true;showInstall()},3200);
 }
 })();

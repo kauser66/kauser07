@@ -1,0 +1,17 @@
+{
+  "name": "শাহবাজপুর পূর্বপাড়া — আমাদের গ্রাম, আমাদের গর্ব",
+  "short_name": "আমাদের এলাকা",
+  "description": "শাহবাজপুর পূর্বপাড়া, জামালপুর সদর — গ্রামের খবর, মানুষ ও প্রতিষ্ঠান",
+  "lang": "bn",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#121e31",
+  "theme_color": "#d32f2f",
+  "icons": [
+    { "src": "images/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "images/logo.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "images/logo.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
