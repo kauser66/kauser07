@@ -1,6 +1,8 @@
 /* শাহবাজপুর পূর্বপাড়া — Cloudflare Worker
    রেটিং + দর্শকের পোস্ট (খবর / স্বেচ্ছাসেবক) + অনুমোদন প্যানেলের API
-   D1 = DB, R2 = PHOTOS, গোপন পাসওয়ার্ড = ADMIN_KEY (Secret) */
+   অনুমোদন করলে পোস্ট GitHub এর data/news.json বা data/volunteers.json এ ও ছবি images/ এ যোগ হয়,
+   তাই Sveltia CMS এ সবার সাথে এডিট/ছবি বদল/মুছে ফেলা যায়।
+   D1 = DB, R2 = PHOTOS, গোপন: ADMIN_KEY (প্যানেলের পাসওয়ার্ড), GITHUB_TOKEN (রিপোতে লিখার জন্য) */
 
 const ENC = new TextEncoder();
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
@@ -9,6 +11,8 @@ const PHONE_RE = /^[0-9\u09E6-\u09EF+\-\s]{6,20}$/;
 const KEY_RE = /^[0-9a-f-]{36}\.jpg$/;
 const MAX_IMG = 1500000;
 const DAYS_OK = [1, 3, 7, 15, 30];
+const GH_REPO = 'kauser66/kauser07';
+const GH_BRANCH = 'main';
 
 function json(data, status = 200, extra = {}) {
   return new Response(JSON.stringify(data), {
@@ -29,7 +33,6 @@ async function sha256(text) {
 async function ipHash(request) {
   return (await sha256('ip-v1:' + (request.headers.get('CF-Connecting-IP') || 'x'))).slice(0, 32);
 }
-/* সাইট যে ঠিকানা থেকেই খোলা হোক, পাবলিক API (পোস্ট/রেটিং) কাজ করবে। অনুমোদন API পাসওয়ার্ড দিয়ে সুরক্ষিত। */
 function corsHeaders(origin) {
   return {
     'Access-Control-Allow-Origin': origin || '*',
@@ -47,6 +50,106 @@ function bnDate(s) {
   } catch (e) {
     return '';
   }
+}
+function toB64(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+function fromB64Utf8(b64) {
+  const bin = atob(String(b64).replace(/\s/g, ''));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+/* ===== GitHub এ পোস্ট যোগ করা (CMS এর ডাটা ফাইলে), একটাই কমিটে ===== */
+async function gh(env, path, opts = {}) {
+  const headers = {
+    Authorization: 'Bearer ' + env.GITHUB_TOKEN,
+    Accept: 'application/vnd.github+json',
+    'User-Agent': 'ourvillage-worker',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  if (opts.body) headers['Content-Type'] = 'application/json';
+  return fetch('https://api.github.com/repos/' + GH_REPO + path, { ...opts, headers });
+}
+
+async function publishToRepo(env, row) {
+  if (!env.GITHUB_TOKEN) {
+    return { ok: false, note: 'GITHUB_TOKEN এখনো সেট করা হয়নি, তাই CMS এ যোগ হয়নি (সাইটে পোস্ট দেখা যাবে)।' };
+  }
+  const isNews = row.kind === 'news';
+  const jsonPath = isNews ? 'data/news.json' : 'data/volunteers.json';
+
+  const bufs = [];
+  for (const k of [row.photo1, row.photo2].filter(Boolean)) {
+    const o = await env.PHOTOS.get(k);
+    if (o) bufs.push(new Uint8Array(await o.arrayBuffer()));
+  }
+  const paths = bufs.map((_, i) => 'images/visitor-' + row.id + '-' + (i + 1) + '.jpg');
+
+  let item;
+  if (isNews) {
+    item = { title: row.title, date: bnDate(row.decided_at), cat: row.cat || '', photo: paths[0] || '', photo2: paths[1] || '', text: row.body || '' };
+    if (row.expires_at) item.expires = String(row.expires_at).replace(' ', 'T') + 'Z';
+  } else {
+    item = { name: row.name, photo: paths[0] || '', house: row.house || '', address: row.address || '', about: row.body || '', phone: row.phone || '', fb: row.fb || '', map: row.map || '' };
+  }
+
+  for (let attempt = 0; attempt < 3; attempt++) {
+    let r = await gh(env, '/git/ref/heads/' + GH_BRANCH);
+    if (!r.ok) return { ok: false, note: 'GitHub ব্রাঞ্চ পড়া যায়নি (কোড ' + r.status + ')। টোকেনের অনুমতি দেখুন।' };
+    const head = (await r.json()).object.sha;
+    r = await gh(env, '/git/commits/' + head);
+    if (!r.ok) return { ok: false, note: 'GitHub কমিট পড়া যায়নি (কোড ' + r.status + ')' };
+    const baseTree = (await r.json()).tree.sha;
+
+    let data = { items: [] };
+    r = await gh(env, '/contents/' + jsonPath + '?ref=' + head);
+    if (r.ok) {
+      try {
+        const c = await r.json();
+        const parsed = JSON.parse(fromB64Utf8(c.content));
+        data = Array.isArray(parsed) ? { items: parsed } : parsed;
+        if (!Array.isArray(data.items)) data.items = [];
+      } catch (e) {
+        return { ok: false, note: jsonPath + ' পড়া যায়নি' };
+      }
+    } else if (r.status !== 404) {
+      return { ok: false, note: jsonPath + ' খুঁজে পাওয়া যায়নি (কোড ' + r.status + ')' };
+    }
+    if (isNews) data.items.unshift(item);
+    else data.items.push(item);
+
+    const tree = [];
+    for (let i = 0; i < bufs.length; i++) {
+      r = await gh(env, '/git/blobs', { method: 'POST', body: JSON.stringify({ content: toB64(bufs[i]), encoding: 'base64' }) });
+      if (!r.ok) return { ok: false, note: 'ছবি GitHub এ উঠানো যায়নি (কোড ' + r.status + ')' };
+      tree.push({ path: paths[i], mode: '100644', type: 'blob', sha: (await r.json()).sha });
+    }
+    r = await gh(env, '/git/blobs', { method: 'POST', body: JSON.stringify({ content: JSON.stringify(data, null, 2) + '\n', encoding: 'utf-8' }) });
+    if (!r.ok) return { ok: false, note: 'ডাটা ফাইল তৈরি হয়নি (কোড ' + r.status + ')' };
+    tree.push({ path: jsonPath, mode: '100644', type: 'blob', sha: (await r.json()).sha });
+
+    r = await gh(env, '/git/trees', { method: 'POST', body: JSON.stringify({ base_tree: baseTree, tree }) });
+    if (!r.ok) return { ok: false, note: 'GitHub ট্রি তৈরি হয়নি (কোড ' + r.status + ')' };
+    const newTree = (await r.json()).sha;
+    const msg = 'দর্শকের পোস্ট অনুমোদিত: ' + (isNews ? 'খবর — ' + row.title : 'স্বেচ্ছাসেবক — ' + row.name);
+    r = await gh(env, '/git/commits', { method: 'POST', body: JSON.stringify({ message: msg, tree: newTree, parents: [head] }) });
+    if (!r.ok) return { ok: false, note: 'GitHub কমিট হয়নি (কোড ' + r.status + ')' };
+    const commit = (await r.json()).sha;
+    r = await gh(env, '/git/refs/heads/' + GH_BRANCH, { method: 'PATCH', body: JSON.stringify({ sha: commit }) });
+    if (r.ok) return { ok: true };
+    if (r.status !== 422 && r.status !== 409) return { ok: false, note: 'GitHub এ লেখা যায়নি (কোড ' + r.status + ')' };
+  }
+  return { ok: false, note: 'একই সময়ে অন্য পরিবর্তন হচ্ছিল, কিছুক্ষণ পর “CMS এ পাঠান” চাপুন।' };
+}
+
+async function markPublished(env, row) {
+  const keys = [row.photo1, row.photo2].filter(Boolean);
+  await env.DB.prepare('UPDATE submissions SET published = 1, photo1 = NULL, photo2 = NULL WHERE id = ?1').bind(row.id).run();
+  if (keys.length) await env.PHOTOS.delete(keys);
 }
 
 /* ===== স্বেচ্ছাসেবকের নামের তালিকা (CMS + অনুমোদিত দর্শকের পোস্ট) ===== */
@@ -160,10 +263,10 @@ async function handleSubmit(request, env) {
   return json({ ok: true });
 }
 
-/* ===== সাইটে দেখানোর জন্য অনুমোদিত পোস্ট ===== */
+/* ===== শুধু যাদের CMS এ যোগ হয়নি সেই অনুমোদিত পোস্টগুলো সাইটে দেখানো (ব্যাকআপ) ===== */
 async function handleContent(env) {
-  const v = await env.DB.prepare(`SELECT * FROM submissions WHERE kind = 'volunteer' AND status = 'approved' ORDER BY decided_at ASC, id ASC`).all();
-  const n = await env.DB.prepare(`SELECT * FROM submissions WHERE kind = 'news' AND status = 'approved' AND (expires_at IS NULL OR expires_at > datetime('now')) ORDER BY decided_at DESC, id DESC`).all();
+  const v = await env.DB.prepare(`SELECT * FROM submissions WHERE kind = 'volunteer' AND status = 'approved' AND published = 0 ORDER BY decided_at ASC, id ASC`).all();
+  const n = await env.DB.prepare(`SELECT * FROM submissions WHERE kind = 'news' AND status = 'approved' AND published = 0 AND (expires_at IS NULL OR expires_at > datetime('now')) ORDER BY decided_at DESC, id DESC`).all();
   const ph = (k) => (k ? '/api/photo/' + k : '');
   return json({
     volunteers: v.results.map((x) => ({ name: x.name, photo: ph(x.photo1), house: x.house || '', address: x.address || '', about: x.body || '', phone: x.phone || '', fb: x.fb || '', map: x.map || '' })),
@@ -188,7 +291,6 @@ async function adminGate(request, env) {
   const now = Math.floor(Date.now() / 1000);
   const row = await env.DB.prepare('SELECT COUNT(*) AS c FROM admin_fails WHERE ip_hash = ?1 AND ts > ?2').bind(ih, now - 3600).first();
   if (row && row.c >= 10) return err('too_many', 429);
-  /* পাসওয়ার্ড হেডারে এনকোড করা অবস্থায় আসে (বাংলা অক্ষর থাকলেও চলবে) */
   let sent = request.headers.get('X-Admin-Key') || '';
   try {
     sent = decodeURIComponent(sent);
@@ -207,10 +309,20 @@ async function adminGate(request, env) {
 
 const VIEWS = {
   pending: `status = 'pending' ORDER BY id ASC`,
-  live: `status = 'approved' AND (kind = 'volunteer' OR expires_at IS NULL OR expires_at > datetime('now')) ORDER BY decided_at DESC`,
-  archive: `status = 'approved' AND kind = 'news' AND expires_at IS NOT NULL AND expires_at <= datetime('now') ORDER BY expires_at DESC`,
+  live: `status = 'approved' AND (kind = 'volunteer' OR published = 1 OR expires_at IS NULL OR expires_at > datetime('now')) ORDER BY decided_at DESC`,
+  archive: `status = 'approved' AND kind = 'news' AND published = 0 AND expires_at IS NOT NULL AND expires_at <= datetime('now') ORDER BY expires_at DESC`,
   rejected: `status = 'rejected' ORDER BY decided_at DESC`,
 };
+
+async function publishAndReport(env, id) {
+  const fresh = await env.DB.prepare('SELECT * FROM submissions WHERE id = ?1').bind(id).first();
+  const pub = await publishToRepo(env, fresh);
+  if (pub.ok) {
+    await markPublished(env, fresh);
+    return json({ ok: true, published: true, note: 'CMS এ যোগ হয়েছে (নিজের ক্যাটাগরির বাক্সে)। ১-২ মিনিটের মধ্যে সাইটে দেখাবে।' });
+  }
+  return json({ ok: true, published: false, note: pub.note });
+}
 
 async function handleAdmin(request, env, url) {
   const deny = await adminGate(request, env);
@@ -221,7 +333,7 @@ async function handleAdmin(request, env, url) {
     const v = url.searchParams.get('view');
     if (!VIEWS[v]) return err('bad_request');
     const { results } = await env.DB.prepare(
-      `SELECT id, kind, status, submitter, name, title, body, house, address, phone, fb, map, cat, photo1, photo2, days, created_at, decided_at, expires_at FROM submissions WHERE ${VIEWS[v]} LIMIT 200`
+      `SELECT id, kind, status, submitter, name, title, body, house, address, phone, fb, map, cat, photo1, photo2, days, published, created_at, decided_at, expires_at FROM submissions WHERE ${VIEWS[v]} LIMIT 200`
     ).all();
     const pc = await env.DB.prepare(`SELECT COUNT(*) AS c FROM submissions WHERE status = 'pending'`).first();
     return json({ items: results, pending: pc ? pc.c : 0 });
@@ -254,6 +366,7 @@ async function handleAdmin(request, env, url) {
     }
 
     if (b.action === 'approve') {
+      if (row.published) return json({ ok: true, published: true, note: 'এই পোস্ট ইতিমধ্যে CMS এ আছে।' });
       let days = null;
       if (row.kind === 'news') {
         days = parseInt(b.days, 10) || row.days || 7;
@@ -262,9 +375,14 @@ async function handleAdmin(request, env, url) {
       await env.DB.prepare(
         `UPDATE submissions SET status = 'approved', decided_at = datetime('now'), expires_at = CASE WHEN kind = 'news' THEN datetime('now', ?2) ELSE NULL END WHERE id = ?1`
       ).bind(id, '+' + (days || 7) + ' days').run();
-      return json({ ok: true });
+      return await publishAndReport(env, id);
+    }
+    if (b.action === 'publish') {
+      if (row.status !== 'approved' || row.published) return err('bad_request');
+      return await publishAndReport(env, id);
     }
     if (b.action === 'reject') {
+      if (row.published) return err('already_published');
       await env.DB.prepare(`UPDATE submissions SET status = 'rejected', decided_at = datetime('now'), expires_at = NULL WHERE id = ?1`).bind(id).run();
       return json({ ok: true });
     }

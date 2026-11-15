@@ -24,7 +24,8 @@
   var css=[
     `*{font-family:'Anek Bangla','Hind Siliguri',sans-serif}`,
     `.sn,.stat b,.stitle em,.sub-t em,.tag,.ward,.vr-badge,#dynamic-date,#dynamic-time{font-family:'Anek Bangla','Noto Sans Bengali','Hind Siliguri',sans-serif}`,
-    `.sn{font-weight:700;font-size:18px;line-height:1;letter-spacing:0;min-width:36px;height:36px;padding:0 8px;text-align:center;font-synthesis:none;text-rendering:optimizeLegibility}`
+    `.sn{font-weight:700;font-size:18px;line-height:1;letter-spacing:0;min-width:36px;height:36px;padding:0 8px;text-align:center;font-synthesis:none;text-rendering:optimizeLegibility}`,
+    `#people .card{cursor:pointer}`
   ].join('\n');
   var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 })();
@@ -47,10 +48,39 @@
   var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 })();
 
+/* খবরের মেয়াদ: CMS এর “মেয়াদ শেষের সময়” পেরিয়ে গেলে খবর নিজে থেকে সাইট থেকে সরে যায় (CMS এ থাকে)।
+   খবরের দ্বিতীয় ছবি (photo2) খবর খুললে পপআপে দেখায়। */
+(function(){
+  function dropExpired(){
+    if(typeof DATA==='undefined'||!Array.isArray(DATA.news))return;
+    var now=Date.now();
+    DATA.news=DATA.news.filter(function(n){
+      if(!n||!n.expires)return true;
+      var t=Date.parse(n.expires);
+      return isNaN(t)||t>now;
+    });
+  }
+  if(typeof build==='function'){
+    var ob0=build;
+    window.build=function(){dropExpired();return ob0.apply(this,arguments)};
+  }
+  var mc=document.getElementById('mc');
+  if(mc&&'MutationObserver' in window){
+    new MutationObserver(function(){
+      var h3=mc.querySelector('h3'),mt=mc.querySelector('.mt');
+      if(!h3||!mt||mc.querySelector('[data-p2]'))return;
+      var t=h3.textContent,n=null;
+      (DATA.news||[]).forEach(function(x){if(x&&x.photo2&&x.title===t)n=x});
+      if(!n||typeof im!=='function')return;
+      var d=document.createElement('div');d.setAttribute('data-p2','1');d.innerHTML=im(n.photo2,n.title);
+      mt.parentNode.insertBefore(d,mt);
+    }).observe(mc,{childList:true});
+  }
+})();
+
 /* =====================================================================
-   rating.js — স্বেচ্ছাসেবকের রেটিং (পপআপ + গড় রেটিং)
+   rating.js — স্বেচ্ছাসেবকের রেটিং + পরিচিত মুখের তথ্য পপআপ
    রেটিং জমা থাকে Cloudflare D1 ডাটাবেসে (/api/rate, /api/ratings)।
-   শুধু #volunteers সেকশনের কার্ডে কাজ করে। বাকি সাইট বদলায় না।
    ===================================================================== */
 (function(){
 'use strict';
@@ -112,6 +142,23 @@ function decorate(){
   });
 }
 
+/* পরিচিত মুখের কার্ডে ক্লিক করলে তথ্যের পপআপ */
+function decoratePeople(){
+  if(!ready())return;
+  var cards=document.querySelectorAll('#people .card');
+  if(!cards.length)return;
+  var list=clean(DATA.people);
+  cards.forEach(function(c){
+    if(c.getAttribute('data-pp'))return;
+    var h=c.querySelector('h4');if(!h)return;
+    var nm=h.textContent,p=null;
+    for(var k=0;k<list.length;k++){if(list[k].name===nm){p=list[k];break}}
+    if(!p)return;
+    c.setAttribute('data-pp','1');
+    c.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('a'))return;openInfo(p)});
+  });
+}
+
 function refresh(){
   document.querySelectorAll('#volunteers .card[data-vname]').forEach(function(c){
     var b=c.querySelector('.vr-b');if(b)b.innerHTML=badge(c.getAttribute('data-vname'));
@@ -127,14 +174,30 @@ function loadRatings(){
   }).catch(function(){});
 }
 
-function openBox(v){
-  CUR=v.name;
+function shell(){
   var o=el('vr-ov');
   if(!o){
     o=document.createElement('div');o.id='vr-ov';o.innerHTML='<div id="vr-box"></div>';document.body.appendChild(o);
     o.addEventListener('click',function(e){if(e.target===o||(e.target.classList&&e.target.classList.contains('vr-x')))closeBox()});
     document.addEventListener('keydown',function(e){if(e.key==='Escape')closeBox()});
   }
+  return o;
+}
+
+function openInfo(p){
+  CUR=null;
+  var o=shell(),rows='';
+  [['title','পদবি'],['nick','ডাকনাম'],['house','বাড়ির নাম'],['address','ঠিকানা']].forEach(function(f){
+    if(p[f[0]])rows+=`<div class='row'><b>${f[1]}:</b> ${esc(p[f[0]])}</div>`;
+  });
+  if(p.about)rows+=`<div class='about'>${esc(p.about)}</div>`;
+  el('vr-box').innerHTML=`<button class='vr-x' type='button' aria-label='বন্ধ করুন'>&times;</button><div class='vr-ph'><i class='fas fa-user'></i>${im(p.photo,p.name)}</div><div class='vr-body'><h3>${esc(p.name)}</h3>${rows}${typeof acts==='function'?acts(p,'বাড়ির লোকেশন'):''}</div>`;
+  o.classList.add('on');document.body.style.overflow='hidden';
+}
+
+function openBox(v){
+  CUR=v.name;
+  var o=shell();
   var rows='';
   if(v.house)rows+='<div class="row"><b>বাড়ি:</b> '+esc(v.house)+'</div>';
   if(v.address)rows+='<div class="row"><b>ঠিকানা:</b> '+esc(v.address)+'</div>';
@@ -180,56 +243,58 @@ function openBox(v){
   };
 }
 
+function scan(){decorate();decoratePeople()}
 function init(){
-  decorate();loadRatings();
+  scan();loadRatings();
   var app=el('app');
-  if(app&&'MutationObserver' in window){new MutationObserver(decorate).observe(app,{childList:true,subtree:true})}
-  else{setInterval(decorate,1500)}
+  if(app&&'MutationObserver' in window){new MutationObserver(scan).observe(app,{childList:true,subtree:true})}
+  else{setInterval(scan,1500)}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 
-/* স্বাগতম পপআপ (প্রিমিয়াম): সাইটে ঢুকলেই ৩ সেকেন্ড দেখায়, তারপর নিজে থেকে মিলিয়ে যায় (ট্যাপ করলে আগেই বন্ধ হয়) */
+/* স্বাগতম পপআপ (প্রিমিয়াম, স্মুথ): শুধু transform ও opacity দিয়ে অ্যানিমেশন, ব্লার/ভারী ইফেক্ট নেই,
+   তাই ফোনে আটকায় না। ৩ সেকেন্ড দেখায়, তারপর মিলিয়ে যায় (ট্যাপ করলে আগেই বন্ধ) */
 (function(){
   var wcss=`
-@property --wla{syntax:'<angle>';initial-value:0deg;inherits:false}
-#wl-ov{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;background:radial-gradient(circle at 50% 38%,rgba(127,29,29,.6),rgba(8,14,26,.94) 72%);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:wlIn .45s ease both}
-#wl-ov.out{animation:wlOut .5s ease forwards;pointer-events:none}
+#wl-ov{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;background:radial-gradient(circle at 50% 40%,#5b1a1a 0%,#1a1424 55%,#080e1a 100%);contain:layout paint;animation:wlIn .4s ease-out both;will-change:opacity}
+#wl-ov.out{animation:wlOut .5s ease-in forwards;pointer-events:none}
 @keyframes wlIn{from{opacity:0}to{opacity:1}}
 @keyframes wlOut{from{opacity:1}to{opacity:0}}
-#wl-card{--wla:0deg;position:relative;z-index:2;width:100%;max-width:420px;text-align:center;color:#fff;border-radius:26px;padding:34px 22px 30px;overflow:hidden;background:#18243a;border:2px solid transparent;background:linear-gradient(160deg,#121e31,#3b1220) padding-box,conic-gradient(from var(--wla),#ffd54f,#d32f2f,#ff8a80,#ffd54f) border-box;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:wlCard .85s cubic-bezier(.16,1,.3,1) both,wlSpin 3s linear infinite}
-#wl-ov.out #wl-card{animation:wlCardOut .5s ease forwards}
-@keyframes wlCard{from{opacity:0;transform:scale(.82) translateY(30px);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
-@keyframes wlCardOut{from{opacity:1;transform:none}to{opacity:0;transform:scale(1.06) translateY(-14px)}}
-@keyframes wlSpin{to{--wla:360deg}}
-#wl-card::after{content:'';position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent);transform:skewX(-20deg);animation:wlShine 1.6s .6s ease-in-out both}
-@keyframes wlShine{from{left:-70%}to{left:150%}}
-#wl-ic{width:76px;height:76px;margin:0 auto 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;background:radial-gradient(circle at 30% 30%,#ff5252,#b71c1c);box-shadow:0 0 0 6px rgba(255,255,255,.08),0 0 40px rgba(211,47,47,.7);animation:wlIc .9s .15s cubic-bezier(.34,1.56,.64,1) both,wlPulse 1.5s 1s ease-in-out infinite}
-@keyframes wlIc{from{transform:scale(0) rotate(-140deg);opacity:0}to{transform:none;opacity:1}}
-@keyframes wlPulse{50%{box-shadow:0 0 0 12px rgba(255,255,255,.04),0 0 60px rgba(255,82,82,.9)}}
-#wl-card h2{margin:0;font-weight:700;line-height:1.45}
-.wl-l{display:block;opacity:0;transform:translateY(18px);filter:blur(6px)}
-.wl-l1{font-size:clamp(21px,6.6vw,28px);background:linear-gradient(90deg,#fff3a0,#ffd54f,#ffffff,#ffd54f,#fff3a0);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:wlUp .75s .5s cubic-bezier(.16,1,.3,1) forwards,wlGold 2.2s linear infinite}
-.wl-l2{font-size:clamp(19px,5.6vw,24px);color:#ffcdd2;animation:wlUp .75s .8s cubic-bezier(.16,1,.3,1) forwards}
-.wl-l3{font-size:clamp(19px,5.6vw,24px);animation:wlUp .75s 1.1s cubic-bezier(.16,1,.3,1) forwards}
-@keyframes wlUp{to{opacity:1;transform:none;filter:blur(0)}}
-@keyframes wlGold{to{background-position:200% center}}
-#wl-dv{height:2px;width:0;margin:16px auto 12px;background:linear-gradient(90deg,transparent,#ffd54f,transparent);animation:wlDv .7s 1.4s ease forwards}
-@keyframes wlDv{to{width:72%}}
-#wl-by{font-size:15px;color:#ffcdd2;letter-spacing:.3px;opacity:0;transform:translateY(10px);animation:wlUp .75s 1.7s ease forwards}
+#wl-card{position:relative;z-index:2;width:100%;max-width:420px;border-radius:26px;padding:2px;overflow:hidden;background:#d32f2f;box-shadow:0 24px 60px rgba(0,0,0,.55);transform:translateZ(0);will-change:transform,opacity;animation:wlCard .7s cubic-bezier(.16,1,.3,1) both}
+#wl-ov.out #wl-card{animation:wlCardOut .5s ease-in forwards}
+@keyframes wlCard{from{opacity:0;transform:translateY(34px) scale(.9)}to{opacity:1;transform:none}}
+@keyframes wlCardOut{from{opacity:1;transform:none}to{opacity:0;transform:translateY(-16px) scale(1.04)}}
+#wl-ring{position:absolute;left:-60%;top:-60%;width:220%;height:220%;background:conic-gradient(#ffd54f,#d32f2f,#ff8a80,#ffd54f,#d32f2f,#ffd54f);animation:wlRot 3s linear infinite;will-change:transform}
+@keyframes wlRot{to{transform:rotate(360deg)}}
+#wl-in{position:relative;z-index:1;text-align:center;color:#fff;border-radius:24px;padding:32px 22px 30px;overflow:hidden;background:linear-gradient(160deg,#121e31,#3b1220)}
+#wl-in::after{content:'';position:absolute;top:0;left:0;width:35%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.18),transparent);transform:translateX(-160%) skewX(-20deg);animation:wlShine 1.5s .6s ease-in-out both;will-change:transform}
+@keyframes wlShine{to{transform:translateX(420%) skewX(-20deg)}}
+#wl-ic{width:76px;height:76px;margin:0 auto 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;background:radial-gradient(circle at 30% 30%,#ff5252,#b71c1c);box-shadow:0 0 0 6px rgba(255,255,255,.08),0 0 34px rgba(211,47,47,.6);animation:wlIc .8s .15s cubic-bezier(.34,1.56,.64,1) both,wlPulse 1.4s 1s ease-in-out infinite;will-change:transform}
+@keyframes wlIc{from{transform:scale(0) rotate(-120deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes wlPulse{50%{transform:scale(1.07)}}
+#wl-in h2{margin:0;font-weight:700;line-height:1.45}
+.wl-l{display:block;opacity:0;transform:translateY(16px);will-change:transform,opacity}
+.wl-l1{font-size:clamp(21px,6.6vw,28px);color:#ffd54f;animation:wlUp .7s .5s cubic-bezier(.16,1,.3,1) forwards}
+.wl-l2{font-size:clamp(19px,5.6vw,24px);color:#ffcdd2;animation:wlUp .7s .8s cubic-bezier(.16,1,.3,1) forwards}
+.wl-l3{font-size:clamp(19px,5.6vw,24px);animation:wlUp .7s 1.1s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes wlUp{to{opacity:1;transform:none}}
+#wl-dv{height:2px;width:72%;margin:16px auto 12px;background:linear-gradient(90deg,transparent,#ffd54f,transparent);transform:scaleX(0);animation:wlDv .6s 1.4s ease-out forwards}
+@keyframes wlDv{to{transform:scaleX(1)}}
+#wl-by{font-size:15px;color:#ffcdd2;letter-spacing:.3px;opacity:0;transform:translateY(10px);animation:wlUp .7s 1.7s ease-out forwards}
 #wl-by b{color:#fff;font-weight:700}
-#wl-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:linear-gradient(90deg,#ffd54f,#ff5252);transform-origin:left;animation:wlbar 3s linear forwards}
+#wl-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:linear-gradient(90deg,#ffd54f,#ff5252);transform-origin:left;animation:wlbar 3s linear forwards;will-change:transform}
 @keyframes wlbar{to{transform:scaleX(0)}}
-.wl-sp{position:absolute;z-index:1;bottom:-12px;border-radius:50%;background:rgba(255,213,79,.9);box-shadow:0 0 12px rgba(255,213,79,.9);opacity:0;animation:wlRise linear both}
-@keyframes wlRise{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translateY(-105vh) scale(1.2);opacity:0}}
+.wl-sp{position:absolute;z-index:1;bottom:-12px;border-radius:50%;background:#ffd54f;opacity:0;animation:wlSp linear both;will-change:transform,opacity}
+@keyframes wlSp{0%{transform:translateY(0);opacity:0}15%{opacity:.85}100%{transform:translateY(-105vh);opacity:0}}
 `;
   var ws=document.createElement('style');ws.textContent=wcss;document.head.appendChild(ws);
   var wo=document.createElement('div');wo.id='wl-ov';
-  wo.innerHTML=`<div id='wl-card'><div id='wl-ic'><i class='fas fa-house-chimney'></i></div><h2><span class='wl-l wl-l1'>শাহবাজপুর পূর্বপাড়ার</span><span class='wl-l wl-l2'>ভার্চুয়াল জগৎ-এ</span><span class='wl-l wl-l3'>আপনাকে স্বাগতম</span></h2><div id='wl-dv'></div><div id='wl-by'>বানিয়েছেন- <b>মোঃ কাওছার আহম্মেদ</b></div><div id='wl-bar'></div></div>`;
-  for(var i=0;i<18;i++){
+  wo.innerHTML=`<div id='wl-card'><i id='wl-ring'></i><div id='wl-in'><div id='wl-ic'><i class='fas fa-house-chimney'></i></div><h2><span class='wl-l wl-l1'>শাহবাজপুর পূর্বপাড়ার</span><span class='wl-l wl-l2'>ভার্চুয়াল জগৎ-এ</span><span class='wl-l wl-l3'>আপনাকে স্বাগতম</span></h2><div id='wl-dv'></div><div id='wl-by'>বানিয়েছেন- <b>মোঃ কাওছার আহম্মেদ</b></div><div id='wl-bar'></div></div></div>`;
+  for(var i=0;i<8;i++){
     var sp=document.createElement('span');sp.className='wl-sp';
-    var z=3+Math.random()*6;
-    sp.style.cssText='left:'+(Math.random()*100)+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(1.8+Math.random()*1.8)+'s;animation-delay:'+(Math.random()*1.1)+'s';
+    var z=3+Math.random()*5;
+    sp.style.cssText='left:'+(6+Math.random()*88)+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(2+Math.random()*1.6)+'s;animation-delay:'+(Math.random()*1.2)+'s';
     wo.appendChild(sp);
   }
   document.body.appendChild(wo);

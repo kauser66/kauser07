@@ -51,7 +51,9 @@ collections:
               - {label: "তারিখ (যেমন: ১০ নভেম্বর ২০২৬)", name: date, widget: string, required: false}
               - {label: "ক্যাটাগরি (যেমন: স্থানীয়)", name: cat, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
+              - {label: "দ্বিতীয় ছবি (ঐচ্ছিক)", name: photo2, widget: image, required: false}
               - {label: "বিস্তারিত", name: text, widget: text, required: false}
+              - {label: "মেয়াদ শেষের সময় (খালি রাখলে কখনো শেষ হবে না)", name: expires, widget: datetime, required: false, hint: "সময় পেরিয়ে গেলে খবরটি নিজে থেকেই সাইট থেকে সরে যাবে (এই তালিকায় থাকবে, চাইলে মুছে দিতে পারবেন)"}
 
   - name: member
     label: "জনপ্রতিনিধি (একজন)"

@@ -39,6 +39,8 @@ button{font-size:15px;font-weight:600;border:none;border-radius:24px;padding:9px
 .del{background:#fff;color:var(--red);border:2px solid var(--red)}
 .msg{padding:14px;text-align:center;color:#666}
 .err{color:var(--red);font-weight:600;margin-bottom:10px}
+.pub{background:#e8f5e9;color:#166534;border-radius:10px;padding:8px 12px;font-size:14px;margin-top:8px}
+.warn{background:#fff8e1;color:#8a6100;border-radius:10px;padding:8px 12px;font-size:14px;margin-top:8px}
 </style>
 </head>
 <body>
@@ -126,16 +128,22 @@ function link(label,url){
 
 function act(it,action,days){
   api('/api/admin/decide',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:it.id,action:action,days:days})})
-    .then(function(r){if(!r.ok)throw 0;load()}).catch(function(){alert('কাজটি হয়নি, আবার চেষ্টা করুন।')});
+    .then(function(r){return r.json().then(function(j){
+      if(!r.ok||!j||!j.ok)throw 0;
+      if(j.note)alert(j.note);
+      load();
+    })}).catch(function(){alert('কাজটি হয়নি, আবার চেষ্টা করুন।')});
 }
-function remove(it){
-  if(!confirm('তালিকা থেকে স্থায়িভাবে মুছে ফেলবেন? আর ফেরত আনা যাবে না।'))return;
+function remove(it,published){
+  var q=published?'এই রেকর্ডটা মুছবেন? (সাইটের খবর/স্বেচ্ছাসেবক CMS থেকে মুছতে হবে, এটা সাইট থেকে সরাবে না।)':'তালিকা থেকে স্থায়িভাবে মুছে ফেলবেন? আর ফেরত আনা যাবে না।';
+  if(!confirm(q))return;
   api('/api/admin/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:it.id})})
     .then(function(r){if(!r.ok)throw 0;load()}).catch(function(){alert('মুছতে পারা যায়নি।')});
 }
 
 function card(it){
   var news=it.kind==='news';
+  var approved=it.status==='approved',pubd=approved&&!!it.published;
   var c=h('div',{cls:'card'});
   c.appendChild(h('span',{cls:'tag'+(news?' n':''),text:news?'খবর':'স্বেচ্ছাসেবক'}));
   var rows=news
@@ -143,8 +151,10 @@ function card(it){
     :[row('নাম',it.name),row('বাড়ির নাম',it.house),row('ঠিকানা',it.address),row('পরিচিতি',it.body),row('ফোন',it.phone),link('ফেসবুক',it.fb),link('ম্যাপ',it.map)];
   rows.push(row('পোস্টকারী',it.submitter));
   rows.push(row('জমা দেওয়ার সময়',when(it.created_at)));
-  if(it.status==='approved'&&news&&it.expires_at)rows.push(row('মেয়াদ শেষ',when(it.expires_at)));
+  if(approved&&news&&it.expires_at)rows.push(row('মেয়াদ শেষ',when(it.expires_at)));
   rows.forEach(function(r){if(r)c.appendChild(r)});
+  if(pubd)c.appendChild(h('div',{cls:'pub',text:'✅ CMS এ প্রকাশিত। সম্পাদন, ছবি বদল বা মুছতে CMS এর '+(news?'“সংবাদ”':'“স্বেচ্ছাসেবক”')+' বাক্স ব্যবহার করুন।'}));
+  if(approved&&!pubd)c.appendChild(h('div',{cls:'warn',text:'⚠ এখনো CMS এ যোগ হয়নি (সাইটে দেখা যাচ্ছে)। “ডি CMS এ পাঠান” চাপুন।'}));
 
   var ph=h('div',{cls:'photos'});
   [it.photo1,it.photo2].forEach(function(k){
@@ -156,20 +166,23 @@ function card(it){
 
   var a=h('div',{cls:'acts'});
   var sel=null;
-  if(news&&(it.status!=='approved'||VIEW==='archive')){
+  if(news&&!pubd&&(!approved||VIEW==='archive')){
     sel=h('select',{});
     [[1,'১ দিন'],[3,'৩ দিন'],[7,'৭ দিন'],[15,'১৫ দিন'],[30,'৩০ দিন']].forEach(function(o){
       var op=h('option',{value:o[0],text:'মেয়াদ: '+o[1]});if(o[0]===(it.days||7))op.selected=true;sel.appendChild(op);
     });
     a.appendChild(sel);
   }
-  if(it.status!=='approved'||VIEW==='archive'){
+  if(!pubd&&(!approved||VIEW==='archive')){
     a.appendChild(h('button',{cls:'ok',text:VIEW==='archive'?'✅ আবার চালু করুন':'✅ অনুমোদন',onclick:function(){act(it,'approve',sel?sel.value:null)}}));
   }
-  if(it.status!=='rejected'&&VIEW!=='archive'){
-    a.appendChild(h('button',{cls:'no',text:it.status==='approved'?'↩ সরিয়ে নিন (বাতিল)':'❌ বাতিল',onclick:function(){act(it,'reject')}}));
+  if(approved&&!pubd){
+    a.appendChild(h('button',{cls:'ok',text:'📤 CMS এ পাঠান',onclick:function(){act(it,'publish')}}));
   }
-  a.appendChild(h('button',{cls:'del',text:'🗑 মুছুন',onclick:function(){remove(it)}}));
+  if(!pubd&&it.status!=='rejected'&&VIEW!=='archive'){
+    a.appendChild(h('button',{cls:'no',text:approved?'↩ সরিয়ে নিন (বাতিল)':'❌ বাতিল',onclick:function(){act(it,'reject')}}));
+  }
+  a.appendChild(h('button',{cls:'del',text:pubd?'🗑 রেকর্ড মুছুন':'🗑 মুছুন',onclick:function(){remove(it,pubd)}}));
   c.appendChild(a);
   return c;
 }
