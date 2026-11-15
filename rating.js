@@ -13,14 +13,24 @@
   }
 })();
 
-/* লেআউট ও সংখ্যার ব্যাজ সংশোধন:
-   • সিরিয়াল নম্বর (১, ২, ৩...) সাইটের মূল ফন্টে (Hind Siliguri) পরিষ্কারভাবে
-   • মসজিদ, মাদ্রাসা, গোরস্থান, বাজার: পুরো পর্দা জুড়ে চ্যাপ্টা কার্ড */
+/* সংখ্যা (০-৯) পরিষ্কার দেখানোর জন্য শুধু সংখ্যার গ্লিফগুলো Anek Bangla থেকে আনা হয়।
+   অক্ষর (লেখা) আগের ফন্ট Hind Siliguri তেই থাকে (সংখ্যা-আলাদা ফন্টের ফাইলে অক্ষর নেই, তাই সেগুলো বাদ পড়ে) */
 (function(){
-  var ids=['mosque','madrasa','graveyard','bazar'];
+  var fl=document.createElement('link');
+  fl.rel='stylesheet';
+  fl.href='https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@600;700&text='+encodeURIComponent('০১২৩৪৫৬৭৮৯')+'&display=swap';
+  document.head.appendChild(fl);
+})();
+
+/* লেআউট ও সংখ্যার ব্যাজ সংশোধন:
+   • সিরিয়াল নম্বর (১, ২, ৩...) পরিষ্কার সংখ্যার ফন্টে
+   • মসজিদ, বিদ্যালয়, মাদ্রাসা, গোরস্থান, বাজার: পুরো পর্দা জুড়ে চ্যাপ্টা কার্ড */
+(function(){
+  var ids=['mosque','school','madrasa','graveyard','bazar'];
   function s(x){return ids.map(function(i){return '#'+i+' '+x}).join(',')}
   var css=[
-    `.sn{font-family:'Hind Siliguri',sans-serif!important;font-weight:700;font-size:17px;line-height:1;letter-spacing:0;min-width:36px;height:36px;padding:0 8px;text-align:center;font-synthesis:none;text-rendering:optimizeLegibility}`,
+    `.sn,.stat b,.stitle em,.row{font-family:'Anek Bangla','Hind Siliguri',sans-serif}`,
+    `.sn{font-family:'Anek Bangla','Hind Siliguri',sans-serif!important;font-weight:700;font-size:18px;line-height:1;letter-spacing:0;min-width:36px;height:36px;padding:0 8px;text-align:center;font-synthesis:none;text-rendering:optimizeLegibility}`,
     s('.grid')+`{grid-template-columns:1fr;gap:18px}`,
     s('.card:not(.wide)')+`{display:grid;grid-template-columns:minmax(220px,38%) 1fr;align-items:stretch;border-radius:20px}`,
     s('.card:not(.wide) .ph')+`{aspect-ratio:auto;height:100%;min-height:210px}`,
@@ -176,7 +186,7 @@ function init(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 
-/* স্বাগতম পপআপ (প্রিমিয়াম): সাইটে ঢুকলেই ২.৫ সেকেন্ড দেখায়, তারপর নিজে থেকে মিলিয়ে যায় (ট্যাপ করলে আগেই বন্ধ হয়) */
+/* স্বাগতম পপআপ (প্রিমিয়াম): সাইটে ঢুকলেই ৩ সেকেন্ড দেখায়, তারপর নিজে থেকে মিলিয়ে যায় (ট্যাপ করলে আগেই বন্ধ হয়) */
 (function(){
   var wcss=`
 @property --wla{syntax:'<angle>';initial-value:0deg;inherits:false}
@@ -189,23 +199,23 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 @keyframes wlCard{from{opacity:0;transform:scale(.82) translateY(30px);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
 @keyframes wlCardOut{from{opacity:1;transform:none}to{opacity:0;transform:scale(1.06) translateY(-14px)}}
 @keyframes wlSpin{to{--wla:360deg}}
-#wl-card::after{content:'';position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent);transform:skewX(-20deg);animation:wlShine 1.5s .55s ease-in-out both}
+#wl-card::after{content:'';position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent);transform:skewX(-20deg);animation:wlShine 1.6s .6s ease-in-out both}
 @keyframes wlShine{from{left:-70%}to{left:150%}}
 #wl-ic{width:76px;height:76px;margin:0 auto 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;background:radial-gradient(circle at 30% 30%,#ff5252,#b71c1c);box-shadow:0 0 0 6px rgba(255,255,255,.08),0 0 40px rgba(211,47,47,.7);animation:wlIc .9s .15s cubic-bezier(.34,1.56,.64,1) both,wlPulse 1.5s 1s ease-in-out infinite}
 @keyframes wlIc{from{transform:scale(0) rotate(-140deg);opacity:0}to{transform:none;opacity:1}}
 @keyframes wlPulse{50%{box-shadow:0 0 0 12px rgba(255,255,255,.04),0 0 60px rgba(255,82,82,.9)}}
 #wl-card h2{margin:0;font-weight:700;line-height:1.45}
 .wl-l{display:block;opacity:0;transform:translateY(18px);filter:blur(6px)}
-.wl-l1{font-size:clamp(21px,6.6vw,28px);background:linear-gradient(90deg,#fff3a0,#ffd54f,#ffffff,#ffd54f,#fff3a0);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:wlUp .7s .45s cubic-bezier(.16,1,.3,1) forwards,wlGold 2.2s linear infinite}
-.wl-l2{font-size:clamp(19px,5.6vw,24px);color:#ffcdd2;animation:wlUp .7s .7s cubic-bezier(.16,1,.3,1) forwards}
-.wl-l3{font-size:clamp(19px,5.6vw,24px);animation:wlUp .7s .95s cubic-bezier(.16,1,.3,1) forwards}
+.wl-l1{font-size:clamp(21px,6.6vw,28px);background:linear-gradient(90deg,#fff3a0,#ffd54f,#ffffff,#ffd54f,#fff3a0);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:wlUp .75s .5s cubic-bezier(.16,1,.3,1) forwards,wlGold 2.2s linear infinite}
+.wl-l2{font-size:clamp(19px,5.6vw,24px);color:#ffcdd2;animation:wlUp .75s .8s cubic-bezier(.16,1,.3,1) forwards}
+.wl-l3{font-size:clamp(19px,5.6vw,24px);animation:wlUp .75s 1.1s cubic-bezier(.16,1,.3,1) forwards}
 @keyframes wlUp{to{opacity:1;transform:none;filter:blur(0)}}
 @keyframes wlGold{to{background-position:200% center}}
-#wl-dv{height:2px;width:0;margin:16px auto 12px;background:linear-gradient(90deg,transparent,#ffd54f,transparent);animation:wlDv .7s 1.2s ease forwards}
+#wl-dv{height:2px;width:0;margin:16px auto 12px;background:linear-gradient(90deg,transparent,#ffd54f,transparent);animation:wlDv .7s 1.4s ease forwards}
 @keyframes wlDv{to{width:72%}}
-#wl-by{font-size:15px;color:#ffcdd2;letter-spacing:.3px;opacity:0;transform:translateY(10px);animation:wlUp .7s 1.45s ease forwards}
+#wl-by{font-size:15px;color:#ffcdd2;letter-spacing:.3px;opacity:0;transform:translateY(10px);animation:wlUp .75s 1.7s ease forwards}
 #wl-by b{color:#fff;font-weight:700}
-#wl-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:linear-gradient(90deg,#ffd54f,#ff5252);transform-origin:left;animation:wlbar 2.5s linear forwards}
+#wl-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:linear-gradient(90deg,#ffd54f,#ff5252);transform-origin:left;animation:wlbar 3s linear forwards}
 @keyframes wlbar{to{transform:scaleX(0)}}
 .wl-sp{position:absolute;z-index:1;bottom:-12px;border-radius:50%;background:rgba(255,213,79,.9);box-shadow:0 0 12px rgba(255,213,79,.9);opacity:0;animation:wlRise linear both}
 @keyframes wlRise{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translateY(-105vh) scale(1.2);opacity:0}}
@@ -213,10 +223,10 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   var ws=document.createElement('style');ws.textContent=wcss;document.head.appendChild(ws);
   var wo=document.createElement('div');wo.id='wl-ov';
   wo.innerHTML=`<div id='wl-card'><div id='wl-ic'><i class='fas fa-house-chimney'></i></div><h2><span class='wl-l wl-l1'>শাহবাজপুর পূর্বপাড়ার</span><span class='wl-l wl-l2'>ভার্চুয়াল জগৎ-এ</span><span class='wl-l wl-l3'>আপনাকে স্বাগতম</span></h2><div id='wl-dv'></div><div id='wl-by'>বানিয়েছেন- <b>মোঃ কাওছার আহম্মেদ</b></div><div id='wl-bar'></div></div>`;
-  for(var i=0;i<16;i++){
+  for(var i=0;i<18;i++){
     var sp=document.createElement('span');sp.className='wl-sp';
     var z=3+Math.random()*6;
-    sp.style.cssText='left:'+(Math.random()*100)+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(1.6+Math.random()*1.6)+'s;animation-delay:'+(Math.random()*.9)+'s';
+    sp.style.cssText='left:'+(Math.random()*100)+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(1.8+Math.random()*1.8)+'s;animation-delay:'+(Math.random()*1.1)+'s';
     wo.appendChild(sp);
   }
   document.body.appendChild(wo);
@@ -227,7 +237,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
     setTimeout(function(){if(wo.parentNode)wo.parentNode.removeChild(wo)},600);
   }
   wo.addEventListener('click',hide);
-  setTimeout(hide,2500);
+  setTimeout(hide,3000);
 })();
 
 /* দর্শকের পোস্ট সুবিধা (visitor.js) লোড করা */
