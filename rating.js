@@ -13,6 +13,27 @@
   }
 })();
 
+/* লেআউট ও সংখ্যার ব্যাজ সংশোধন:
+   • সিরিয়াল নম্বর (১, ২, ৩...) সাইটের মূল ফন্টে (Hind Siliguri) পরিষ্কারভাবে
+   • মসজিদ, মাদ্রাসা, গোরস্থান, বাজার: পুরো পর্দা জুড়ে চ্যাপ্টা কার্ড */
+(function(){
+  var ids=['mosque','madrasa','graveyard','bazar'];
+  function s(x){return ids.map(function(i){return '#'+i+' '+x}).join(',')}
+  var css=[
+    `.sn{font-family:'Hind Siliguri',sans-serif!important;font-weight:700;font-size:17px;line-height:1;letter-spacing:0;min-width:36px;height:36px;padding:0 8px;text-align:center;font-synthesis:none;text-rendering:optimizeLegibility}`,
+    s('.grid')+`{grid-template-columns:1fr;gap:18px}`,
+    s('.card:not(.wide)')+`{display:grid;grid-template-columns:minmax(220px,38%) 1fr;align-items:stretch;border-radius:20px}`,
+    s('.card:not(.wide) .ph')+`{aspect-ratio:auto;height:100%;min-height:210px}`,
+    s('.card:not(.wide) .cb')+`{padding:22px 24px;display:flex;flex-direction:column;justify-content:center}`,
+    `@media(max-width:700px){`,
+    s('.card:not(.wide)')+`{display:flex;flex-direction:column}`,
+    s('.card:not(.wide) .ph')+`{aspect-ratio:16/9;height:auto;min-height:0;max-height:230px}`,
+    s('.card:not(.wide) .cb')+`{padding:16px}`,
+    `}`
+  ].join('\n');
+  var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
+})();
+
 /* =====================================================================
    rating.js — স্বেচ্ছাসেবকের রেটিং (পপআপ + গড় রেটিং)
    রেটিং জমা থাকে Cloudflare D1 ডাটাবেসে (/api/rate, /api/ratings)।
@@ -155,20 +176,49 @@ function init(){
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 
-/* স্বাগতম পপআপ: সাইটে ঢুকলেই ২.৫ সেকেন্ড দেখায়, তারপর নিজে থেকে মিলিয়ে যায় (ট্যাপ করলে আগেই বন্ধ হয়) */
+/* স্বাগতম পপআপ (প্রিমিয়াম): সাইটে ঢুকলেই ২.৫ সেকেন্ড দেখায়, তারপর নিজে থেকে মিলিয়ে যায় (ট্যাপ করলে আগেই বন্ধ হয়) */
 (function(){
-  var wcss=''+
-  '#wl-ov{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(10,18,32,.72);backdrop-filter:blur(3px);opacity:1;transition:opacity .5s}'+
-  '#wl-ov.out{opacity:0;pointer-events:none}'+
-  '#wl-box{position:relative;overflow:hidden;max-width:440px;width:100%;text-align:center;color:#fff;border-radius:20px;padding:34px 24px 32px;background:linear-gradient(135deg,#121e31,#7f1d1d,#d32f2f);box-shadow:0 20px 60px rgba(0,0,0,.55);animation:popin .6s both}'+
-  '#wl-box i{display:block;font-size:46px;color:#ffeb3b;margin-bottom:14px;animation:floating 2s ease-in-out infinite}'+
-  '#wl-box h2{font-size:26px;line-height:1.5;font-weight:700}'+
-  '#wl-box h2 span{color:#ffcdd2}'+
-  '#wl-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:#ffeb3b;transform-origin:left;animation:wlbar 2.5s linear forwards}'+
-  '@keyframes wlbar{to{transform:scaleX(0)}}';
+  var wcss=`
+@property --wla{syntax:'<angle>';initial-value:0deg;inherits:false}
+#wl-ov{position:fixed;inset:0;z-index:5000;display:flex;align-items:center;justify-content:center;padding:20px;overflow:hidden;background:radial-gradient(circle at 50% 38%,rgba(127,29,29,.6),rgba(8,14,26,.94) 72%);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:wlIn .45s ease both}
+#wl-ov.out{animation:wlOut .5s ease forwards;pointer-events:none}
+@keyframes wlIn{from{opacity:0}to{opacity:1}}
+@keyframes wlOut{from{opacity:1}to{opacity:0}}
+#wl-card{--wla:0deg;position:relative;z-index:2;width:100%;max-width:420px;text-align:center;color:#fff;border-radius:26px;padding:34px 22px 30px;overflow:hidden;background:#18243a;border:2px solid transparent;background:linear-gradient(160deg,#121e31,#3b1220) padding-box,conic-gradient(from var(--wla),#ffd54f,#d32f2f,#ff8a80,#ffd54f) border-box;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:wlCard .85s cubic-bezier(.16,1,.3,1) both,wlSpin 3s linear infinite}
+#wl-ov.out #wl-card{animation:wlCardOut .5s ease forwards}
+@keyframes wlCard{from{opacity:0;transform:scale(.82) translateY(30px);filter:blur(8px)}to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes wlCardOut{from{opacity:1;transform:none}to{opacity:0;transform:scale(1.06) translateY(-14px)}}
+@keyframes wlSpin{to{--wla:360deg}}
+#wl-card::after{content:'';position:absolute;top:0;left:-70%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.2),transparent);transform:skewX(-20deg);animation:wlShine 1.5s .55s ease-in-out both}
+@keyframes wlShine{from{left:-70%}to{left:150%}}
+#wl-ic{width:76px;height:76px;margin:0 auto 16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;color:#fff;background:radial-gradient(circle at 30% 30%,#ff5252,#b71c1c);box-shadow:0 0 0 6px rgba(255,255,255,.08),0 0 40px rgba(211,47,47,.7);animation:wlIc .9s .15s cubic-bezier(.34,1.56,.64,1) both,wlPulse 1.5s 1s ease-in-out infinite}
+@keyframes wlIc{from{transform:scale(0) rotate(-140deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes wlPulse{50%{box-shadow:0 0 0 12px rgba(255,255,255,.04),0 0 60px rgba(255,82,82,.9)}}
+#wl-card h2{margin:0;font-weight:700;line-height:1.45}
+.wl-l{display:block;opacity:0;transform:translateY(18px);filter:blur(6px)}
+.wl-l1{font-size:clamp(21px,6.6vw,28px);background:linear-gradient(90deg,#fff3a0,#ffd54f,#ffffff,#ffd54f,#fff3a0);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:wlUp .7s .45s cubic-bezier(.16,1,.3,1) forwards,wlGold 2.2s linear infinite}
+.wl-l2{font-size:clamp(19px,5.6vw,24px);color:#ffcdd2;animation:wlUp .7s .7s cubic-bezier(.16,1,.3,1) forwards}
+.wl-l3{font-size:clamp(19px,5.6vw,24px);animation:wlUp .7s .95s cubic-bezier(.16,1,.3,1) forwards}
+@keyframes wlUp{to{opacity:1;transform:none;filter:blur(0)}}
+@keyframes wlGold{to{background-position:200% center}}
+#wl-dv{height:2px;width:0;margin:16px auto 12px;background:linear-gradient(90deg,transparent,#ffd54f,transparent);animation:wlDv .7s 1.2s ease forwards}
+@keyframes wlDv{to{width:72%}}
+#wl-by{font-size:15px;color:#ffcdd2;letter-spacing:.3px;opacity:0;transform:translateY(10px);animation:wlUp .7s 1.45s ease forwards}
+#wl-by b{color:#fff;font-weight:700}
+#wl-bar{position:absolute;left:0;bottom:0;height:4px;width:100%;background:linear-gradient(90deg,#ffd54f,#ff5252);transform-origin:left;animation:wlbar 2.5s linear forwards}
+@keyframes wlbar{to{transform:scaleX(0)}}
+.wl-sp{position:absolute;z-index:1;bottom:-12px;border-radius:50%;background:rgba(255,213,79,.9);box-shadow:0 0 12px rgba(255,213,79,.9);opacity:0;animation:wlRise linear both}
+@keyframes wlRise{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translateY(-105vh) scale(1.2);opacity:0}}
+`;
   var ws=document.createElement('style');ws.textContent=wcss;document.head.appendChild(ws);
   var wo=document.createElement('div');wo.id='wl-ov';
-  wo.innerHTML=`<div id='wl-box'><i class='fas fa-house-chimney'></i><h2>শাহবাজপুর পূর্বপাড়ার <span>ভার্চুয়াল জগৎ</span>-এ আপনাকে স্বাগতম</h2><div id='wl-bar'></div></div>`;
+  wo.innerHTML=`<div id='wl-card'><div id='wl-ic'><i class='fas fa-house-chimney'></i></div><h2><span class='wl-l wl-l1'>শাহবাজপুর পূর্বপাড়ার</span><span class='wl-l wl-l2'>ভার্চুয়াল জগৎ-এ</span><span class='wl-l wl-l3'>আপনাকে স্বাগতম</span></h2><div id='wl-dv'></div><div id='wl-by'>বানিয়েছেন- <b>মোঃ কাওছার আহম্মেদ</b></div><div id='wl-bar'></div></div>`;
+  for(var i=0;i<16;i++){
+    var sp=document.createElement('span');sp.className='wl-sp';
+    var z=3+Math.random()*6;
+    sp.style.cssText='left:'+(Math.random()*100)+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(1.6+Math.random()*1.6)+'s;animation-delay:'+(Math.random()*.9)+'s';
+    wo.appendChild(sp);
+  }
   document.body.appendChild(wo);
   var gone=false;
   function hide(){
