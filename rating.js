@@ -13,24 +13,27 @@
   }
 })();
 
-/* সংখ্যা (০-৯) পরিষ্কার দেখানোর জন্য শুধু সংখ্যার গ্লিফগুলো Anek Bangla থেকে আনা হয়।
-   অক্ষর (লেখা) আগের ফন্ট Hind Siliguri তেই থাকে (সংখ্যা-আলাদা ফন্টের ফাইলে অক্ষর নেই, তাই সেগুলো বাদ পড়ে) */
+/* ===== সাইটের সব জায়গায় বাংলা সংখ্যা (০-৯) পরিষ্কার দেখানোর ব্যবস্থা =====
+   • শুধু ০-৯ সংখ্যার গ্লিফ Anek Bangla থেকে আসে। অক্ষর আগের ফন্টেই থাকে।
+   • সাইটের সব উপাদানে (ভবিষ্যতে যোগ হওয়া উপাদানসহ) এই নিয়ম লাগু হয়। */
 (function(){
   var fl=document.createElement('link');
   fl.rel='stylesheet';
-  fl.href='https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@600;700&text='+encodeURIComponent('০১২৩৪৫৬৭৮৯')+'&display=swap';
+  fl.href='https://fonts.googleapis.com/css2?family=Anek+Bangla:wght@400;500;600;700&text='+encodeURIComponent('০১২৩৪৫৬৭৮৯')+'&display=swap';
   document.head.appendChild(fl);
+  var css=[
+    `*{font-family:'Anek Bangla','Hind Siliguri',sans-serif}`,
+    `.sn,.stat b,.stitle em,.sub-t em,.tag,.ward,.vr-badge,#dynamic-date,#dynamic-time{font-family:'Anek Bangla','Noto Sans Bengali','Hind Siliguri',sans-serif}`,
+    `.sn{font-weight:700;font-size:18px;line-height:1;letter-spacing:0;min-width:36px;height:36px;padding:0 8px;text-align:center;font-synthesis:none;text-rendering:optimizeLegibility}`
+  ].join('\n');
+  var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 })();
 
-/* লেআউট ও সংখ্যার ব্যাজ সংশোধন:
-   • সিরিয়াল নম্বর (১, ২, ৩...) পরিষ্কার সংখ্যার ফন্টে
-   • মসজিদ, বিদ্যালয়, মাদ্রাসা, গোরস্থান, বাজার: পুরো পর্দা জুড়ে চ্যাপ্টা কার্ড */
+/* লেআউট: মসজিদ, বিদ্যালয়, মাদ্রাসা, গোরস্থান, বাজার: পুরো পর্দা জুড়ে চ্যাপ্টা কার্ড */
 (function(){
   var ids=['mosque','school','madrasa','graveyard','bazar'];
   function s(x){return ids.map(function(i){return '#'+i+' '+x}).join(',')}
   var css=[
-    `.sn,.stat b,.stitle em,.row{font-family:'Anek Bangla','Hind Siliguri',sans-serif}`,
-    `.sn{font-family:'Anek Bangla','Hind Siliguri',sans-serif!important;font-weight:700;font-size:18px;line-height:1;letter-spacing:0;min-width:36px;height:36px;padding:0 8px;text-align:center;font-synthesis:none;text-rendering:optimizeLegibility}`,
     s('.grid')+`{grid-template-columns:1fr;gap:18px}`,
     s('.card:not(.wide)')+`{display:grid;grid-template-columns:minmax(220px,38%) 1fr;align-items:stretch;border-radius:20px}`,
     s('.card:not(.wide) .ph')+`{aspect-ratio:auto;height:100%;min-height:210px}`,
@@ -57,7 +60,7 @@ var CUR=null;
 
 var css=''+
 '#volunteers .card{cursor:pointer}'+
-'.vr-badge{display:inline-block;margin:4px 0 6px;background:#fff8e1;border:1px solid #ffe082;color:#8a6100;border-radius:20px;padding:2px 12px;font-size:13.5px;font-weight:600;font-family:\'Noto Sans Bengali\',\'Hind Siliguri\',sans-serif}'+
+'.vr-badge{display:inline-block;margin:4px 0 6px;background:#fff8e1;border:1px solid #ffe082;color:#8a6100;border-radius:20px;padding:2px 12px;font-size:13.5px;font-weight:600}'+
 '.vr-badge.none{background:#f3f4f6;border-color:#e0e0e0;color:#888;font-weight:500}'+
 '#vr-ov{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3500;display:none;align-items:center;justify-content:center;padding:15px}'+
 '#vr-ov.on{display:flex}'+
