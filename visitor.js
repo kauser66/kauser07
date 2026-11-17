@@ -1,7 +1,7 @@
 /* =====================================================================
    visitor.js — দর্শকের পোস্ট (খবর / স্বেচ্ছাসেবক যোগ)
    + অনুমোদিত পোস্ট সাইটের তথ্যের সাথে মিশিয়ে দেখানো
-   + হোমস্ক্রিনে ইনস্টলের প্রস্তাব (৫ সেকেন্ড পর নিজে সরে যায়)
+   + হোমস্ক্রিনে ইনস্টল (৫ সেকেন্ডের প্রস্তাব + সবসময়ের “Install this App” বাটন)
    rating.js থেকে লোড হয়। বাকি সাইট বদলায় না।
    ===================================================================== */
 (function(){
@@ -87,6 +87,13 @@ var css=`
 #vp-inst .vp-no{background:rgba(255,255,255,.14);color:#fff;width:30px;height:30px;font-size:16px;padding:0}
 #vp-inst .vp-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,#ffd54f,#ff5252);transform-origin:left;animation:vpBar 5s linear forwards}
 @keyframes vpBar{to{transform:scaleX(0)}}
+#vp-ib{position:fixed;right:12px;bottom:70px;z-index:890;display:flex;align-items:center;gap:6px;background:rgba(18,30,49,.92);color:#fff;border:1px solid rgba(255,213,79,.6);border-radius:20px;padding:7px 12px;font-size:13px;font-weight:600;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.3);font-family:Arial,Helvetica,sans-serif;letter-spacing:.2px}
+#vp-ib i{color:#ffd54f;font-size:13px}
+#vp-how{position:fixed;inset:0;z-index:4100;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(0,0,0,.7)}
+#vp-how .vp-hc{background:#fff;border-radius:16px;max-width:380px;width:100%;padding:22px 20px;text-align:center}
+#vp-how h4{font-size:20px;color:var(--dark);margin-bottom:10px}
+#vp-how p{font-size:15.5px;color:#333;margin-bottom:6px}
+#vp-how .btn{margin:14px 0 0}
 `;
 var st=document.createElement('style');st.textContent=css;document.head.appendChild(st);
 
@@ -207,11 +214,14 @@ function done(){
   el('vp-ok').onclick=closeBox;
 }
 
-/* ===== ৩) হোমস্ক্রিনে অ্যাপ হিসেবে ইনস্টল (PWA) — স্বাগতম পপআপের পর ২ সেকেন্ড দেখায়, ৫ সেকেন্ড পর নিজে সরে যায় ===== */
+/* ===== ৩) হোমস্ক্রিনে অ্যাপ হিসেবে ইনস্টল (PWA) =====
+   • স্বাগতম পপআপের পর প্রস্তাব কার্ড ৫ সেকেন্ড দেখায়, তারপর নিজে সরে যায়
+   • আর ডান পাশে সবসময় ছোট “Install this App” বাটন থাকে (ইনস্টল করা থাকলে থাকে না) */
 function standalone(){return (window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}
 if(!standalone()){
+  var W0='https://ourvillage.rvallagena2.workers.dev';
   if(!document.querySelector('link[rel=manifest]')){
-    var ml=document.createElement('link');ml.rel='manifest';ml.href='manifest.webmanifest';document.head.appendChild(ml);
+    var ml=document.createElement('link');ml.rel='manifest';ml.href=(location.origin===W0?'/manifest.webmanifest':'manifest.webmanifest');document.head.appendChild(ml);
   }
   if(!document.querySelector('meta[name=theme-color]')){
     var tc=document.createElement('meta');tc.name='theme-color';tc.content='#d32f2f';document.head.appendChild(tc);
@@ -220,6 +230,28 @@ if(!standalone()){
 
   var deferred=null,shownInst=false,afterWelcome=false;
   var isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.MSStream;
+
+  /* সবসময়ের “Install this App” বাটন */
+  var ib=document.createElement('button');ib.id='vp-ib';ib.type='button';
+  ib.innerHTML=`<i class='fas fa-download'></i> Install this App`;
+  document.body.appendChild(ib);
+  function howTo(){
+    var h=document.createElement('div');h.id='vp-how';
+    h.innerHTML=`<div class='vp-hc'><h4>Install this App</h4>`+
+      (isIOS
+        ?`<p>Safari এ নিচের <b>Share</b> বাটন চাপুন</p><p>তারপর <b>“Add to Home Screen”</b> বেছে নিন</p>`
+        :`<p>ব্রাউজারের ওপরের <b>⋮</b> মেনু চাপুন</p><p>তারপর <b>“Install app”</b> বা <b>“Add to Home screen”</b> বেছে নিন</p>`)+
+      `<button class='btn' type='button'>ঠিক আছে</button></div>`;
+    document.body.appendChild(h);
+    function cl(){if(h.parentNode)h.parentNode.removeChild(h)}
+    h.addEventListener('click',function(e){if(e.target===h||(e.target.classList&&e.target.classList.contains('btn')))cl()});
+  }
+  ib.onclick=function(){
+    if(deferred){var d=deferred;deferred=null;d.prompt();if(d.userChoice)d.userChoice.catch(function(){});return}
+    howTo();
+  };
+
+  /* প্রস্তাব কার্ড (৫ সেকেন্ড) */
   function showInstall(){
     if(shownInst||!afterWelcome)return;
     if(!deferred&&!isIOS)return;
@@ -239,12 +271,16 @@ if(!standalone()){
     var go=b.querySelector('.vp-go');
     if(go)go.onclick=function(){
       hideInst();
-      if(deferred){deferred.prompt();deferred.userChoice.then(function(){deferred=null}).catch(function(){})}
+      if(deferred){var d=deferred;deferred=null;d.prompt();if(d.userChoice)d.userChoice.catch(function(){})}
     };
     setTimeout(hideInst,5000);
   }
   window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;showInstall()});
-  window.addEventListener('appinstalled',function(){deferred=null;var x=document.getElementById('vp-inst');if(x&&x.parentNode)x.parentNode.removeChild(x)});
+  window.addEventListener('appinstalled',function(){
+    deferred=null;
+    var x=document.getElementById('vp-inst');if(x&&x.parentNode)x.parentNode.removeChild(x);
+    if(ib.parentNode)ib.parentNode.removeChild(ib);
+  });
   setTimeout(function(){afterWelcome=true;showInstall()},3200);
 }
 })();

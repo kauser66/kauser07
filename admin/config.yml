@@ -18,6 +18,17 @@ media_libraries:
           height: 1000
 
 collections:
+  - name: app
+    label: "📲 অ্যাপের নাম ও লোগো"
+    files:
+      - name: app
+        label: "📲 অ্যাপের নাম ও লোগো"
+        file: data/app.json
+        fields:
+          - {label: "অ্যাপের নাম", name: app_name, widget: string, required: false, hint: "ফোনে ইনস্টল করার সময় ও অ্যাপের পর্দায় দেখানো নাম"}
+          - {label: "ছোট নাম (হোমস্ক্রিনে আইকনের নিচে)", name: short_name, widget: string, required: false, hint: "সর্বোচ্চ ১২-১৬ অক্ষর"}
+          - {label: "অ্যাপের লোগো", name: logo, widget: image, required: false, hint: "চৌকো (বর্গাকার) ছবি দিন, বড় হলে ভালো (৫১২x৫১২ বা বেশি)। খালি রাখলে ডিফল্ট লোগো (শাহবাজপুর পূর্ব পাড়া) থাকবে। নতুন লোগো ফোনে পৌঁছাতে কিছুক্ষণ লাগতে পারে।"}
+
   - name: village
     label: "গ্রামের মূল তথ্য"
     files:
