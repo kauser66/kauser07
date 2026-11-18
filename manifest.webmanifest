@@ -1,17 +1,16 @@
 {
-  "name": "শাহবাজপুর পূর্বপাড়া — আমাদের গ্রাম, আমাদের গর্ব",
-  "short_name": "আমাদের এলাকা",
+  "name": "শাহবাজপুর পূর্ব পাড়া",
+  "short_name": "শাহবাজপুর",
   "description": "শাহবাজপুর পূর্বপাড়া, জামালপুর সদর — গ্রামের খবর, মানুষ ও প্রতিষ্ঠান",
   "lang": "bn",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#121e31",
+  "background_color": "#025802",
   "theme_color": "#d32f2f",
   "icons": [
-    { "src": "images/logo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "images/logo.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any" },
-    { "src": "images/logo.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "https://ourvillage.rvallagena2.workers.dev/app-icon.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "https://ourvillage.rvallagena2.workers.dev/app-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ]
 }
