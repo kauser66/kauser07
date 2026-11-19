@@ -12,7 +12,14 @@ var STORED_THEME=null,STORED_LANG=null;
 try{STORED_THEME=localStorage.getItem('theme');STORED_LANG=localStorage.getItem('lang')}catch(e){}
 var THEME=STORED_THEME||'light',LANG=STORED_LANG||'bn';
 if(THEME==='dark')document.documentElement.classList.add('dark');
+/* Google Translate: ইংরেজি বাটনে সব লেখা স্বয়ংক্রিয়ভাবে ইংরেজি হবে */
+function gtInit(){
+  if(window.google&&google.translate&&google.translate.TranslateElement){
+    new google.translate.TranslateElement({pageLanguage:'bn',includedLanguages:'en,bn',autoDisplay:false},'google_translate_element');
+  }
+}
 </script>
+<script src="https://translate.google.com/translate_a/element.js?cb=gtInit" defer></script>
 <style>
 :root{--red:#d32f2f;--dark:#121e31;--text:#222;--light:#666;--bg:#f0f2f5;--bd:#e0e0e0}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif}
@@ -172,6 +179,12 @@ img[data-s]{opacity:0;transition:opacity .5s}img[data-s].ok{opacity:1}
 .loading::before{content:'';width:26px;height:26px;border:4px solid #ddd;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+/* ===== Google Translate: তার নিজের বার ও টুলটিপ লুকানো ===== */
+#google_translate_element{display:none}
+.goog-te-banner-frame,.skiptranslate iframe,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip{display:none!important}
+body{top:0!important}
+.goog-text-highlight{background:none!important;box-shadow:none!important}
+
 /* ===== ডার্ক মোড ===== */
 html.dark body{background:#0f1520;color:#e6e9ef}
 html.dark .header-main,html.dark .card,html.dark .note,html.dark .breaking,html.dark .stat,html.dark .empty,html.dark .search-box,html.dark #modal .mb{background:#1a2333;color:#e6e9ef}
@@ -211,6 +224,7 @@ html{scroll-behavior:auto}
 </head>
 <body>
 
+<div id="google_translate_element"></div>
 <div class="wm">Created by <b>মোঃ কাওছার আহম্মেদ</b></div>
 <div class="top-bar"><div class="container">
   <div class="ti">
@@ -594,11 +608,16 @@ function setTheme(t){
   try{localStorage.setItem('theme',t)}catch(e){}
   updateCtl();
 }
+/* Google Translate এর ভাষা কুকি সেট করা: en হলে ইংরেজি, bn হলে আসল বাংলা */
+function setGT(l){
+  var v='/bn/'+(l==='en'?'en':'bn');
+  try{document.cookie='googtrans='+v+';path=/';document.cookie='googtrans='+v+';path=/;domain='+location.hostname}catch(e){}
+}
 function setLang(l){
   LANG=l;STORED_LANG=l;
   try{localStorage.setItem('lang',l)}catch(e){}
-  applyStatic();
-  if(shown)render();
+  setGT(l);
+  location.reload();
 }
 /* CMS এর "সাধারণ সেটিং" থেকে ডিফল্ট থিম/ভাষা (ব্যবহারকারী নিজে না বদলালে) */
 function applyDefaults(){
@@ -641,6 +660,8 @@ document.getElementById('lb-bn').onclick=function(){setLang('bn')};
 document.getElementById('lb-en').onclick=function(){setLang('en')};
 document.getElementById('thb').onclick=function(){setTheme(THEME==='dark'?'light':'dark')};
 applyStatic();
+/* ইংরেজি মোডে আছেন কিন্তু অনুবাদের কুকি নেই হলে সেটি সেট করে একবার রিলোড */
+if(LANG==='en'&&document.cookie.indexOf('googtrans=/bn/en')<0){setGT('en');location.reload()}
 load().then(function(){clearTimeout(tm);render()},function(){clearTimeout(tm);render()});
 </script>
 
