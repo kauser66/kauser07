@@ -1,8 +1,40 @@
-/* live.js — CMS এ কিছু বদলালে সাইট/অ্যাপ খোলা থাকার অবস্থাতেই নিজে থেকে বদলে যায়।
-   প্রতি ২৫ সেকেন্ডে ডাটা ফাইলগুলো দেখে; বদলে থাকলে পেজ স্ক্রল ঠিক রেখে নতুন তথ্য দেখায়।
-   পপআপ খোলা থাকলে (যেমন ফর্ম ভরছেন) সেটা নষ্ট না করে পরে দেখায়। */
+/* live.js — (ক) CMS এ কিছু বদলালে সাইট/অ্যাপ খোলা থাকার অবস্থাতেই নিজে থেকে বদলে যায় (প্রতি ২৫ সেকেন্ড)
+   (খ) Google অনুবাদ চালু থাকলেও পপআপের × বাটন যেন কাজ করে ও অনুবাদে নষ্ট না হয় */
 (function () {
-  var FILES = ['village', 'member', 'dev', 'news', 'people', 'mosque', 'school', 'madrasa', 'graveyard', 'bazar', 'mor', 'volunteers', 'community'];
+  /* ===== (খ) অনুবাদের সময় বাটন নষ্ট না হওয়ার ব্যবস্থা ===== */
+  var KEEP = '.vr-x,.vp-x,.vp-no,.vp-go,#vp-fab,#vp-ib,#wl-ov,#vp-inst';
+  function mark(root) {
+    if (!root || !root.querySelectorAll) return;
+    var list = root.querySelectorAll(KEEP);
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].getAttribute('translate') !== 'no') list[i].setAttribute('translate', 'no');
+    }
+    if (root.matches && root.matches(KEEP) && root.getAttribute('translate') !== 'no') root.setAttribute('translate', 'no');
+  }
+  mark(document);
+  if ('MutationObserver' in window) {
+    new MutationObserver(function (muts) {
+      for (var i = 0; i < muts.length; i++) {
+        var a = muts[i].addedNodes;
+        for (var j = 0; j < a.length; j++) if (a[j].nodeType === 1) mark(a[j]);
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  /* অনুবাদের <font> উপাদানে ক্লিক পড়লেও সেটা আসল বাটনে পাঠানো */
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    var b = t.closest('.vr-x,.vp-x,.vp-no,.vp-go');
+    if (b && b !== t) {
+      e.stopPropagation();
+      e.preventDefault();
+      b.click();
+    }
+  }, true);
+
+  /* ===== (ক) লাইভ আপডেট ===== */
+  var FILES = ['village', 'member', 'dev', 'news', 'people', 'mosque', 'school', 'madrasa', 'graveyard', 'bazar', 'mor', 'volunteers', 'community', 'gallery', 'events', 'settings'];
   var last = null, busy = false;
 
   function overlayOpen() {
