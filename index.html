@@ -179,11 +179,12 @@ img[data-s]{opacity:0;transition:opacity .5s}img[data-s].ok{opacity:1}
 .loading::before{content:'';width:26px;height:26px;border:4px solid #ddd;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ===== Google Translate: তার নিজের বার ও টুলটিপ লুকানো ===== */
-#google_translate_element{display:none}
-.goog-te-banner-frame,.skiptranslate iframe,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip{display:none!important}
-body{top:0!important}
+/* ===== Google Translate: তার সব উপাদান (বার, লোগো, লোডার) লুকানো, লেআউট নড়বে না ===== */
+#google_translate_element,.skiptranslate,.goog-te-gadget,.goog-logo-link,.goog-te-banner-frame,.goog-te-balloon-frame,.goog-te-menu-frame,#goog-gt-tt,.goog-tooltip{display:none!important;height:0!important;visibility:hidden!important}
+iframe.goog-te-banner-frame,.skiptranslate iframe{display:none!important}
+html,body{top:0!important;position:static!important;margin-top:0!important}
 .goog-text-highlight{background:none!important;box-shadow:none!important}
+.notranslate{translate:no}
 
 /* ===== ডার্ক মোড ===== */
 html.dark body{background:#0f1520;color:#e6e9ef}
@@ -225,7 +226,7 @@ html{scroll-behavior:auto}
 <body>
 
 <div id="google_translate_element"></div>
-<div class="wm">Created by <b>মোঃ কাওছার আহম্মেদ</b></div>
+<div class="wm">Created by <b id="wm-name" class="notranslate">মোঃ কাওছার আহম্মেদ</b></div>
 <div class="top-bar"><div class="container">
   <div class="ti">
     <span><i class="fas fa-map-marker-alt"></i> <span data-t="শাহবাজপুর পূর্বপাড়া, জামালপুর">শাহবাজপুর পূর্বপাড়া, জামালপুর</span></span>
@@ -278,7 +279,7 @@ html{scroll-behavior:auto}
 <footer><div class="container">
   <h2 data-t="শাহবাজপুর পূর্বপাড়া">শাহবাজপুর পূর্বপাড়া</h2>
   <p data-t="জামালপুর সদর, জামালপুর — আমাদের গ্রাম, আমাদের গর্ব">জামালপুর সদর, জামালপুর — আমাদের গ্রাম, আমাদের গর্ব</p>
-  <div class="credit">Created by <b>মোঃ কাওছার আহম্মেদ</b></div>
+  <div class="credit">Created by <b id="ft-name" class="notranslate">মোঃ কাওছার আহম্মেদ</b></div>
   <p style="margin-top:8px;font-size:14px">&copy; <span id="yr"></span> <span data-t="শাহবাজপুর পূর্বপাড়া। সর্বস্বত্ব সংরক্ষিত।">শাহবাজপুর পূর্বপাড়া। সর্বস্বত্ব সংরক্ষিত।</span></p>
 </div></footer>
 
@@ -536,7 +537,7 @@ function build(){
   var d=DATA.dev||{},dr='';
   if(F(d,'intro'))dr+='<div class="row"><b>'+L('পরিচয়')+':</b> '+esc(F(d,'intro'))+'</div>';
   if(F(d,'edu'))dr+='<div class="row"><b>'+L('শিক্ষা')+':</b> '+esc(F(d,'edu'))+'</div>';
-  h+=sec('dev',L('ডেভেলপার পরিচিতি'),'fa-code','<div class="dev reveal"><div class="dp"><i class="fas fa-user"></i>'+im(d.photo,F(d,'name'))+'</div><div><h4>'+esc(F(d,'name')||'মোঃ কাওছার আহম্মেদ')+'</h4><div style="margin-bottom:8px">'+L('এই ওয়েবসাইটের নির্মাতা')+'</div>'+dr+acts(d,'বাড়ির ম্যাপ')+'</div></div>');
+  h+=sec('dev',L('ডেভেলপার পরিচিতি'),'fa-code','<div class="dev reveal"><div class="dp"><i class="fas fa-user"></i>'+im(d.photo,F(d,'name'))+'</div><div><h4 class="notranslate">'+esc(F(d,'name')||'মোঃ কাওছার আহম্মেদ')+'</h4><div style="margin-bottom:8px">'+L('এই ওয়েবসাইটের নির্মাতা')+'</div>'+dr+acts(d,'বাড়ির ম্যাপ')+'</div></div>');
 
   document.getElementById('app').innerHTML=h;
   document.getElementById('nav').innerHTML=nav.map(function(n,i){return '<a href="#'+n[0]+'"'+(i===0?' class="active"':'')+'><i class="fas '+n[2]+'"></i> '+n[1]+'</a>'}).join('');
@@ -596,10 +597,15 @@ function updateCtl(){
   if(e)e.classList.toggle('on',LANG==='en');
 }
 function applyStatic(){
-  document.documentElement.lang=LANG==='en'?'en':'bn';
+  var en=LANG==='en';
+  document.documentElement.lang=en?'en':'bn';
   document.querySelectorAll('[data-t]').forEach(function(e){e.innerHTML=L(e.getAttribute('data-t'))});
   var q=document.getElementById('q');if(q)q.placeholder=L('নাম, দোকান, প্রতিষ্ঠান খুঁজুন...');
-  var tp=document.getElementById('top');if(tp)tp.setAttribute('aria-label',LANG==='en'?'Back to top':'ওপরে যান');
+  var tp=document.getElementById('top');if(tp)tp.setAttribute('aria-label',en?'Back to top':'ওপরে যান');
+  /* "Created by" এর নাম: ইংরেজিতে MD KAUSER AHMED */
+  var nm=en?'MD KAUSER AHMED':'মোঃ কাওছার আহম্মেদ';
+  var w=document.getElementById('wm-name');if(w)w.textContent=nm;
+  var f=document.getElementById('ft-name');if(f)f.textContent=nm;
   updateCtl();
 }
 function setTheme(t){
@@ -678,5 +684,15 @@ document.addEventListener('click',function(e){
 </script>
 
 <script src="rating.js"></script>
+<script>
+/* স্বাগতম পপআপ: ইংরেজিতে নাম ও লেখা বদলানো (rating.js এর পরে চলে) */
+(function(){
+  var en=LANG==='en';
+  var w=document.getElementById('wl-by');
+  if(w)w.innerHTML=(en?'Created by ':'বানিয়েছেন- ')+'<b class="notranslate">'+(en?'MD KAUSER AHMED':'মোঃ কাওছার আহম্মেদ')+'</b>';
+  var ls=document.querySelectorAll('.wl-l');
+  if(en&&ls.length===3){ls[0].textContent='Welcome to the';ls[1].textContent='Shahbazpur Purbopara';ls[2].textContent='Virtual Village'}
+})();
+</script>
 </body>
 </html>
