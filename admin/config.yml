@@ -37,11 +37,14 @@ collections:
         file: data/village.json
         fields:
           - {label: "ওয়ার্ড (যেমন: ওয়ার্ড - ৪ নং)", name: ward, widget: string, required: false}
+          - {label: "ওয়ার্ড (ইংরেজি, যেমন: Ward 4)", name: ward_en, widget: string, required: false, hint: "ইংরেজি মোডে এটি দেখাবে। খালি রাখলে বাংলা দেখাবে।"}
           - {label: "ইউনিয়ন", name: union, widget: string, required: false}
+          - {label: "ইউনিয়ন (ইংরেজি)", name: union_en, widget: string, required: false, hint: "ইংরেজি মোডে এটি দেখাবে। খালি রাখলে বাংলা দেখাবে।"}
           - {label: "এলাকার জনসংখ্যা (যেমন: ৫২০০)", name: population, widget: string, required: false}
           - {label: "ওয়েবসাইটের লোগো (হেডারে 'আমাদের এলাকা' এর পাশে)", name: logo, widget: image, required: false, hint: "যেকোনো সময় নতুন লোগো দিতে পারবেন। ফাঁকা রাখলে ডিফল্ট ঘরের লোগো থাকবে। চৌকো (বর্গাকার) ছবি দিলে সবচেয়ে ভালো দেখায়।"}
           - {label: "হিরো ছবি (বড় ছবি)", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
           - {label: "গ্রামের পরিচিতি (ছোট লেখা)", name: intro, widget: text, required: false}
+          - {label: "গ্রামের পরিচিতি (ইংরেজি)", name: intro_en, widget: text, required: false, hint: "ইংরেজি মোডে এটি দেখাবে। খালি রাখলে বাংলা দেখাবে।"}
           - {label: "গ্রামের গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
 
   - name: news
@@ -59,11 +62,13 @@ collections:
             add_to_top: true
             fields:
               - {label: "শিরোনাম", name: title, widget: string, required: true}
+              - {label: "শিরোনাম (ইংরেজি)", name: title_en, widget: string, required: false, hint: "ইংরেজি মোডে দেখাবে। খালি রাখলে বাংলা দেখাবে।"}
               - {label: "তারিখ (যেমন: ১০ নভেম্বর ২০২৬)", name: date, widget: string, required: false}
               - {label: "ক্যাটাগরি (যেমন: স্থানীয়)", name: cat, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "দ্বিতীয় ছবি (ঐচ্ছিক)", name: photo2, widget: image, required: false}
               - {label: "বিস্তারিত", name: text, widget: text, required: false}
+              - {label: "বিস্তারিত (ইংরেজি)", name: text_en, widget: text, required: false, hint: "ইংরেজি মোডে দেখাবে। খালি রাখলে বাংলা দেখাবে।"}
               - {label: "মেয়াদ শেষের সময় (খালি রাখলে কখনো শেষ হবে না)", name: expires, widget: datetime, required: false, hint: "সময় পেরিয়ে গেলে খবরটি নিজে থেকেই সাইট থেকে সরে যাবে (এই তালিকায় থাকবে, চাইলে মুছে দিতে পারবেন)"}
 
   - name: member
@@ -74,11 +79,16 @@ collections:
         file: data/member.json
         fields:
           - {label: "নাম", name: name, widget: string, required: true}
+          - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
           - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
           - {label: "পদবি (যেমন: ইউনিয়ন পরিষদ সদস্য)", name: title, widget: string, required: false}
+          - {label: "পদবি (ইংরেজি)", name: title_en, widget: string, required: false}
           - {label: "বাড়ির নাম", name: house, widget: string, required: false}
+          - {label: "বাড়ির নাম (ইংরেজি)", name: house_en, widget: string, required: false}
           - {label: "ঠিকানা", name: address, widget: string, required: false}
+          - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
           - {label: "বিবরণ", name: about, widget: text, required: false}
+          - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
           - {label: "ফোন", name: phone, widget: string, required: false}
           - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
           - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
@@ -97,12 +107,17 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "পদবি", name: title, widget: string, required: false}
+              - {label: "পদবি (ইংরেজি)", name: title_en, widget: string, required: false}
               - {label: "ডাকনাম", name: nick, widget: string, required: false}
               - {label: "বাড়ির নাম", name: house, widget: string, required: false}
+              - {label: "বাড়ির নাম (ইংরেজি)", name: house_en, widget: string, required: false}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "পরিচিতি / বিবরণ", name: about, widget: text, required: false}
+              - {label: "পরিচিতি / বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "ফোন", name: phone, widget: string, required: false}
               - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
@@ -121,9 +136,12 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
 
   - name: school
@@ -140,9 +158,12 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
 
   - name: madrasa
@@ -159,9 +180,12 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
 
   - name: graveyard
@@ -178,9 +202,12 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
 
   - name: bazar
@@ -197,11 +224,14 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
-              - {label: "দোকানসমূহ", name: shops, widget: list, label_singular: "দোকান", summary: "{{fields.name}}", required: false, fields: [{label: "দোকানের নাম", name: name, widget: string, required: true}, {label: "দোকানদারের নাম", name: owner, widget: string, required: false}, {label: "দোকানের ধরন (যেমন: মুদি, ফার্মেসি)", name: type, widget: string, required: false}, {label: "ফোন", name: phone, widget: string, required: false}, {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}, {label: "ঠিকানা", name: address, widget: string, required: false}]}
+              - {label: "দোকানসমূহ", name: shops, widget: list, label_singular: "দোকান", summary: "{{fields.name}}", required: false, fields: [{label: "দোকানের নাম", name: name, widget: string, required: true}, {label: "দোকানের নাম (ইংরেজি)", name: name_en, widget: string, required: false}, {label: "দোকানদারের নাম", name: owner, widget: string, required: false}, {label: "দোকানদারের নাম (ইংরেজি)", name: owner_en, widget: string, required: false}, {label: "দোকানের ধরন (যেমন: মুদি, ফার্মেসি)", name: type, widget: string, required: false}, {label: "দোকানের ধরন (ইংরেজি)", name: type_en, widget: string, required: false}, {label: "ফোন", name: phone, widget: string, required: false}, {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}, {label: "ঠিকানা", name: address, widget: string, required: false}]}
 
   - name: mor
     label: "মোড় (দোকানসহ)"
@@ -217,11 +247,14 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - {label: "মোড়ের নাম", name: name, widget: string, required: true}
+              - {label: "মোড়ের নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
-              - {label: "দোকানসমূহ", name: shops, widget: list, label_singular: "দোকান", summary: "{{fields.name}}", required: false, fields: [{label: "দোকানের নাম", name: name, widget: string, required: true}, {label: "দোকানদারের নাম", name: owner, widget: string, required: false}, {label: "দোকানের ধরন (যেমন: মুদি, ফার্মেসি)", name: type, widget: string, required: false}, {label: "ফোন", name: phone, widget: string, required: false}, {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}, {label: "ঠিকানা", name: address, widget: string, required: false}]}
+              - {label: "দোকানসমূহ", name: shops, widget: list, label_singular: "দোকান", summary: "{{fields.name}}", required: false, fields: [{label: "দোকানের নাম", name: name, widget: string, required: true}, {label: "দোকানের নাম (ইংরেজি)", name: name_en, widget: string, required: false}, {label: "দোকানদারের নাম", name: owner, widget: string, required: false}, {label: "দোকানদারের নাম (ইংরেজি)", name: owner_en, widget: string, required: false}, {label: "দোকানের ধরন (যেমন: মুদি, ফার্মেসি)", name: type, widget: string, required: false}, {label: "দোকানের ধরন (ইংরেজি)", name: type_en, widget: string, required: false}, {label: "ফোন", name: phone, widget: string, required: false}, {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}, {label: "ঠিকানা", name: address, widget: string, required: false}]}
 
   - name: volunteers
     label: "স্বেচ্ছাসেবক"
@@ -237,10 +270,14 @@ collections:
             summary: "{{fields.name}}"
             fields:
               - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "বাড়ির নাম", name: house, widget: string, required: false}
+              - {label: "বাড়ির নাম (ইংরেজি)", name: house_en, widget: string, required: false}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "পরিচিতি / বিবরণ", name: about, widget: text, required: false}
+              - {label: "পরিচিতি / বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "ফোন", name: phone, widget: string, required: false}
               - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
               - {label: "বাড়ির গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
@@ -260,12 +297,17 @@ collections:
             fields:
               - {label: "ধরন", name: category, widget: select, required: false, options: ["সম্মানিত লোক", "হুজুর ও আলেম", "সম্মানী ও প্রবীণ জন"], default: "সম্মানিত লোক"}
               - {label: "নাম", name: name, widget: string, required: true}
+              - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false}
               - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
               - {label: "পদবি", name: title, widget: string, required: false}
+              - {label: "পদবি (ইংরেজি)", name: title_en, widget: string, required: false}
               - {label: "ডাকনাম", name: nick, widget: string, required: false}
               - {label: "বাড়ির নাম", name: house, widget: string, required: false}
+              - {label: "বাড়ির নাম (ইংরেজি)", name: house_en, widget: string, required: false}
               - {label: "ঠিকানা", name: address, widget: string, required: false}
+              - {label: "ঠিকানা (ইংরেজি)", name: address_en, widget: string, required: false}
               - {label: "পরিচিতি / বিবরণ", name: about, widget: text, required: false}
+              - {label: "পরিচিতি / বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "ফোন", name: phone, widget: string, required: false}
               - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
@@ -278,9 +320,12 @@ collections:
         file: data/dev.json
         fields:
           - {label: "নাম", name: name, widget: string, required: true}
+          - {label: "নাম (ইংরেজি)", name: name_en, widget: string, required: false, hint: "ইংরেজি মোডে এটি দেখাবে"}
           - {label: "ছবি", name: photo, widget: image, required: false, hint: "যেকোনো নামের ছবি দিতে পারবেন"}
           - {label: "পরিচয়", name: intro, widget: text, required: false}
+          - {label: "পরিচয় (ইংরেজি)", name: intro_en, widget: text, required: false}
           - {label: "শিক্ষা", name: edu, widget: string, required: false}
+          - {label: "শিক্ষা (ইংরেজি)", name: edu_en, widget: string, required: false}
           - {label: "ইমেইল", name: email, widget: string, required: false}
           - {label: "ফেসবুক আইডি লিংক", name: fb, widget: string, required: false}
           - {label: "ফোন", name: phone, widget: string, required: false}
@@ -301,8 +346,10 @@ collections:
             add_to_top: true
             fields:
               - {label: "শিরোনাম", name: title, widget: string, required: true}
+              - {label: "শিরোনাম (ইংরেজি)", name: title_en, widget: string, required: false}
               - {label: "তারিখ (যেমন: ১৫ আগস্ট ২০২৬)", name: date, widget: string, required: false}
               - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - label: "ছবিসমূহ"
                 name: photos
                 widget: list
@@ -311,6 +358,7 @@ collections:
                 fields:
                   - {label: "ছবি", name: image, widget: image, required: true}
                   - {label: "ক্যাপশন", name: caption, widget: string, required: false}
+                  - {label: "ক্যাপশন (ইংরেজি)", name: caption_en, widget: string, required: false}
 
   - name: events
     label: "ইভেন্ট ক্যালেন্ডার"
@@ -326,10 +374,14 @@ collections:
             summary: "{{fields.title}}"
             fields:
               - {label: "শিরোনাম", name: title, widget: string, required: true}
+              - {label: "শিরোনাম (ইংরেজি)", name: title_en, widget: string, required: false}
               - {label: "তারিখ", name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: true}
               - {label: "সময় (যেমন: বিকাল ৪টা)", name: time, widget: string, required: false}
+              - {label: "সময় (ইংরেজি, যেমন: 4 PM)", name: time_en, widget: string, required: false}
               - {label: "স্থান", name: location, widget: string, required: false}
+              - {label: "স্থান (ইংরেজি)", name: location_en, widget: string, required: false}
               - {label: "বিবরণ", name: about, widget: text, required: false}
+              - {label: "বিবরণ (ইংরেজি)", name: about_en, widget: text, required: false}
               - {label: "গুগল ম্যাপ লিংক", name: map, widget: string, required: false}
 
   - name: settings
@@ -340,6 +392,7 @@ collections:
         file: data/settings.json
         fields:
           - {label: "শহর / এলাকার নাম", name: place, widget: string, required: false}
+          - {label: "শহর / এলাকার নাম (ইংরেজি)", name: place_en, widget: string, required: false}
           - {label: "অক্ষাংশ (Latitude)", name: lat, widget: number, value_type: float, required: false, hint: "নামাজ ও আবহাওয়ার জন্য। ডিফল্ট জামালপুর সদর; ভুল মনে হলে বদলান"}
           - {label: "দ্রাঘিমাংশ (Longitude)", name: lon, widget: number, value_type: float, required: false}
           - {label: "সময়ক্ষেত্র", name: timezone, widget: string, required: false, hint: "বাংলাদেশের জন্য Asia/Dhaka"}
