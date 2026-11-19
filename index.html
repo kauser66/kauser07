@@ -159,12 +159,12 @@ a{text-decoration:none;color:inherit}img{max-width:100%;display:block}
 @media(max-width:600px){.ev{flex-direction:column}.ev .evd{flex-direction:row;gap:8px;min-width:0;justify-content:flex-start;width:100%;padding:10px 14px}}
 
 /* modal */
-#modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3000;display:none;align-items:center;justify-content:center;padding:15px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99990;display:none;align-items:center;justify-content:center;padding:15px;pointer-events:auto}
 #modal.on{display:flex}
-#modal .mb{background:#fff;border-radius:14px;max-width:700px;width:100%;max-height:90vh;overflow:auto;animation:popin .4s both;position:relative}
+#modal .mb{background:#fff;border-radius:14px;max-width:700px;width:100%;max-height:90vh;overflow:auto;animation:popin .4s both;position:relative;pointer-events:auto}
 #modal .mb img{width:100%;aspect-ratio:1/1;max-height:420px;object-fit:cover}
 #modal .mt{padding:20px}#modal h3{font-size:24px;margin-bottom:8px}#modal p{white-space:pre-wrap}
-#modal .x{position:absolute;top:10px;right:10px;background:var(--red);color:#fff;border:none;width:36px;height:36px;border-radius:50%;font-size:18px;line-height:36px;text-align:center;cursor:pointer;z-index:5;padding:0}
+#modal .x{position:absolute;top:10px;right:10px;background:var(--red);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:20px;line-height:40px;text-align:center;cursor:pointer;z-index:5;padding:0;pointer-events:auto;touch-action:manipulation}
 
 footer{background:var(--dark);color:#fff;padding:40px 0 18px;border-top:5px solid var(--red);margin-top:40px;text-align:center}
 footer h2{font-size:30px;margin-bottom:6px}footer p{color:#bbb}
@@ -556,18 +556,44 @@ function motion(){
   });
 }
 
-/* মডাল বন্ধ করা: Google অনুবাদ লেখা বদলালেও ×-এ ক্লিক কাজ করবে */
-function closeModal(){document.getElementById('modal').classList.remove('on')}
+/* ===== মডাল: খোলা ও বন্ধ ===== */
+function closeModal(){
+  var m=document.getElementById('modal');
+  m.classList.remove('on');
+  document.getElementById('mc').innerHTML='';
+}
 function openModal(html){
   var mc=document.getElementById('mc');
-  mc.innerHTML='<button class="x" type="button" aria-label="close">&times;</button>'+html;
-  mc.querySelector('.x').onclick=function(e){e.stopPropagation();closeModal()};
+  mc.innerHTML='<button class="x" type="button" aria-label="Close">&times;</button>'+html;
   document.getElementById('modal').classList.add('on');
 }
+/* বন্ধ করার ক্লিক/টাচ: ক্যাপচার পর্যায়ে ধরা হয়, তাই Google অনুবাদের ভেতরের উপাদানেও কাজ করে */
+function isCloseTarget(t){
+  while(t&&t!==document){
+    if(t.id==='modal'||(t.classList&&t.classList.contains('x')))return t;
+    t=t.parentNode;
+  }
+  return null;
+}
+(function(){
+  function handle(e){
+    var m=document.getElementById('modal');
+    if(!m||!m.classList.contains('on'))return;
+    var t=e.target;
+    var inBox=!!(t&&t.closest&&t.closest('#modal .mb'));
+    var onX=!!(t&&t.closest&&t.closest('#modal .x'));
+    if(onX||!inBox){
+      e.preventDefault();e.stopPropagation();closeModal();
+    }
+  }
+  document.addEventListener('click',handle,true);
+  document.addEventListener('touchend',handle,true);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});
+})();
 
 function wire(){
   document.getElementById('yr').textContent=bn(new Date().getFullYear());
-  var m=document.getElementById('modal'),news=clean(DATA.news);
+  var news=clean(DATA.news);
   document.querySelectorAll('[data-news]').forEach(function(c){c.onclick=function(){
     var n=news[+c.getAttribute('data-news')];if(!n)return;
     openModal(im(n.photo,F(n,'title'))+
@@ -579,9 +605,6 @@ function wire(){
     openModal('<div class="mt"><h3>'+esc(F(a,'title'))+'</h3>'+(a.date?'<div class="row">'+esc(a.date)+'</div>':'')+(F(a,'about')?'<p>'+esc(F(a,'about'))+'</p>':'')+
       '<div class="galg">'+ph.map(function(p){var cap=F(p,'caption');return '<figure>'+im(p.image,cap||F(a,'title'))+(cap?'<figcaption>'+esc(cap)+'</figcaption>':'')+'</figure>'}).join('')+'</div></div>');
   }});
-  /* পর্দার বাইরে বা ×-এর ওপর ক্লিক হলে বন্ধ (টার্গেট যা-ই হোক) */
-  m.onclick=function(e){var t=e.target;if(t===m||(t.closest&&t.closest('.x')))closeModal()};
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal()});
   var mb=document.getElementById('more');
   if(mb)mb.onclick=function(){document.body.classList.add('shownews');mb.style.display='none'};
   document.getElementById('q').oninput=function(){
