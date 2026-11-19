@@ -7,6 +7,12 @@
 <link rel="preconnect" href="https://raw.githubusercontent.com">
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap"></noscript>
 <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" onload="this.onload=null;this.rel='stylesheet'"><noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+<script>
+var STORED_THEME=null,STORED_LANG=null;
+try{STORED_THEME=localStorage.getItem('theme');STORED_LANG=localStorage.getItem('lang')}catch(e){}
+var THEME=STORED_THEME||'light',LANG=STORED_LANG||'bn';
+if(THEME==='dark')document.documentElement.classList.add('dark');
+</script>
 <style>
 :root{--red:#d32f2f;--dark:#121e31;--text:#222;--light:#666;--bg:#f0f2f5;--bd:#e0e0e0}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Hind Siliguri',sans-serif}
@@ -33,6 +39,9 @@ a{text-decoration:none;color:inherit}img{max-width:100%;display:block}
 .ti span{display:flex;align-items:center;gap:6px}
 .ti i{animation:floating 3s ease-in-out infinite;color:var(--red)}
 #dynamic-date,#dynamic-time{font-family:'Noto Sans Bengali','Hind Siliguri',sans-serif;font-size:15px;font-weight:500;letter-spacing:.6px;font-variant-numeric:tabular-nums}
+.ctl{display:flex;gap:6px;align-items:center;margin-left:auto;flex-wrap:wrap}
+.cbtn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.cbtn.on{background:var(--red);border-color:var(--red)}
 
 /* header */
 .header-main{background:#fff;padding:15px 0;border-bottom:2px solid var(--red)}
@@ -129,6 +138,19 @@ a{text-decoration:none;color:inherit}img{max-width:100%;display:block}
 .dev .dp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .dev h4{font-size:28px;margin-bottom:6px;color:#fff}.dev .row{color:#dfe7f5;font-size:16px}.dev .row b{color:#ff8a80}
 
+/* স্মৃতিচারণ ও ইভেন্ট */
+.galg{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-top:14px}
+.galg figure{margin:0}
+.galg img{width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;max-height:none;border-radius:8px}
+.galg figcaption{font-size:13px;color:#666;margin-top:4px}
+.ev{flex-direction:row}
+.evd{background:var(--red);color:#fff;padding:12px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:86px;text-align:center}
+.evd b{font-size:30px;line-height:1.1}
+.evd span{font-size:14px;font-weight:600}
+.ev .cb{flex:1}
+.ev.past{opacity:.6}
+@media(max-width:600px){.ev{flex-direction:column}.ev .evd{flex-direction:row;gap:8px;min-width:0;justify-content:flex-start;width:100%;padding:10px 14px}}
+
 /* modal */
 #modal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:3000;display:none;align-items:center;justify-content:center;padding:15px}
 #modal.on{display:flex}
@@ -149,6 +171,42 @@ img[data-s]{opacity:0;transition:opacity .5s}img[data-s].ok{opacity:1}
 .loading{display:flex;align-items:center;justify-content:center;gap:12px;padding:70px 15px;color:#666;font-weight:500}
 .loading::before{content:'';width:26px;height:26px;border:4px solid #ddd;border-top-color:var(--red);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ===== ডার্ক মোড ===== */
+html.dark body{background:#0f1520;color:#e6e9ef}
+html.dark .header-main,html.dark .card,html.dark .note,html.dark .breaking,html.dark .stat,html.dark .empty,html.dark .search-box,html.dark #modal .mb{background:#1a2333;color:#e6e9ef}
+html.dark .search-box:focus-within{background:#1a2333}
+html.dark .search-box input{color:#e6e9ef;background:transparent}
+html.dark .cb h4,html.dark .stitle h3,html.dark .sub-t,html.dark .shops h5,html.dark .dev h4,html.dark #modal h3{color:#f1f3f7}
+html.dark .row,html.dark .about,html.dark .stat span,html.dark .empty,html.dark .logo-text p,html.dark #modal p{color:#b8c2d4}
+html.dark .row b{color:#ff8a80}
+html.dark .breaking{border-color:#2c3a52}
+html.dark .breaking .tk{background:#1a2333;color:#e6e9ef}
+html.dark .stitle em{background:#2c3a52}
+html.dark .shops{background:transparent}
+html.dark .shops .card{background:#1f2a3f}
+html.dark .acts a{background:#2c3a52}
+html.dark .card{box-shadow:0 4px 15px rgba(0,0,0,.4)}
+html.dark .card:hover h4{color:#ff8a80}
+html.dark .empty{border-color:#2c3a52}
+html.dark .wm{background:#070b13}
+html.dark .galg figcaption{color:#b8c2d4}
+html.dark #modal .mb{background:#1a2333}
+html.dark #vp-box,html.dark #vr-box{background:#1a2333;color:#e6e9ef}
+html.dark #vp-box h3,html.dark .vr-form h5,html.dark .vr-body h3{color:#f1f3f7}
+html.dark .vp-f label{color:#e6e9ef}
+html.dark .vp-hint,html.dark .vr-hint{color:#8d98ad}
+html.dark .vp-f input[type=text],html.dark .vp-f input[type=tel],html.dark .vp-f input[type=url],html.dark .vp-f textarea,html.dark .vp-f select,html.dark .vr-form input[type=email]{background:#0f1520;color:#e6e9ef;border-color:#2c3a52}
+html.dark .vp-pick button{background:#0f1520;color:#e6e9ef;border-color:#2c3a52}
+
+/* ===== পারফরম্যান্স: animation একই থাকবে, ভারী অংশ হালকা করা ===== */
+html{scroll-behavior:auto}
+.hero{animation:none;background:#1d2f4d}
+.hero::before{content:'';position:absolute;top:0;left:0;width:300%;height:100%;background:linear-gradient(120deg,#0c1626,#1d2f4d,#7f1d1d,#1d2f4d,#0c1626);animation:heroMove 14s ease infinite;will-change:transform;z-index:0;pointer-events:none}
+@keyframes heroMove{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(-33.33%,0,0)}100%{transform:translate3d(0,0,0)}}
+.hero .container{z-index:2}
+#vp-fab::after{filter:none!important;opacity:.7!important}
+#vp-fab::before,#vp-fab::after{will-change:transform}
 </style>
 </head>
 <body>
@@ -156,10 +214,15 @@ img[data-s]{opacity:0;transition:opacity .5s}img[data-s].ok{opacity:1}
 <div class="wm">Created by <b>মোঃ কাওছার আহম্মেদ</b></div>
 <div class="top-bar"><div class="container">
   <div class="ti">
-    <span><i class="fas fa-map-marker-alt"></i> শাহবাজপুর পূর্বপাড়া, জামালপুর</span>
+    <span><i class="fas fa-map-marker-alt"></i> <span data-t="শাহবাজপুর পূর্বপাড়া, জামালপুর">শাহবাজপুর পূর্বপাড়া, জামালপুর</span></span>
     <span><i class="far fa-calendar-alt"></i> <span id="dynamic-date">তারিখ লোড হচ্ছে...</span></span>
   </div>
   <div class="ti"><span><i class="far fa-clock"></i> <span id="dynamic-time">সময় লোড হচ্ছে...</span></span></div>
+  <div class="ctl">
+    <button type="button" id="thb" class="cbtn"><i class="fas fa-moon"></i> ডার্ক</button>
+    <button type="button" id="lb-bn" class="cbtn">বাংলা</button>
+    <button type="button" id="lb-en" class="cbtn">English</button>
+  </div>
 </div></div>
 <script>
 (function(){
@@ -167,9 +230,17 @@ img[data-s]{opacity:0;transition:opacity .5s}img[data-s].ok{opacity:1}
   function bn(n){return String(n).replace(/\d/g,function(d){return BN[d]})}
   var days=['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
   var mon=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+  var enDays=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var enMon=['January','February','March','April','May','June','July','August','September','October','November','December'];
   function p(x){return x<10?'0'+x:x}
   function tick(){
     var n=new Date(),h=n.getHours(),pr;
+    if(LANG==='en'){
+      var ep;if(h>=4&&h<6)ep='Dawn';else if(h>=6&&h<12)ep='Morning';else if(h>=12&&h<15)ep='Noon';else if(h>=15&&h<17)ep='Afternoon';else if(h>=17&&h<19)ep='Evening';else ep='Night';
+      document.getElementById('dynamic-date').textContent=enDays[n.getDay()]+', '+n.getDate()+' '+enMon[n.getMonth()]+' '+n.getFullYear();
+      document.getElementById('dynamic-time').textContent=ep+' '+p(h%12||12)+':'+p(n.getMinutes())+':'+p(n.getSeconds());
+      return;
+    }
     if(h>=4&&h<6)pr='ভোর';else if(h>=6&&h<12)pr='সকাল';else if(h>=12&&h<15)pr='দুপুর';else if(h>=15&&h<17)pr='বিকাল';else if(h>=17&&h<19)pr='সন্ধ্যা';else pr='রাত';
     document.getElementById('dynamic-date').textContent=days[n.getDay()]+', '+bn(n.getDate())+' '+mon[n.getMonth()]+' '+bn(n.getFullYear());
     document.getElementById('dynamic-time').textContent=pr+' '+bn(p(h%12||12))+':'+bn(p(n.getMinutes()))+':'+bn(p(n.getSeconds()));
@@ -181,20 +252,20 @@ img[data-s]{opacity:0;transition:opacity .5s}img[data-s].ok{opacity:1}
 <header class="header-main"><div class="container">
   <div class="logo-area">
     <img id="site-logo" src="images/logo.svg" alt="Logo">
-    <div class="logo-text"><h1>আমাদের <span>এলাকা</span></h1><p>শাহবাজপুর পূর্বপাড়া, জামালপুর সদর, জামালপুর</p></div>
+    <div class="logo-text"><h1 data-t="আমাদের <span>এলাকা</span>">আমাদের <span>এলাকা</span></h1><p data-t="শাহবাজপুর পূর্বপাড়া, জামালপুর সদর, জামালপুর">শাহবাজপুর পূর্বপাড়া, জামালপুর সদর, জামালপুর</p></div>
   </div>
   <div class="search-box"><input type="text" id="q" placeholder="নাম, দোকান, প্রতিষ্ঠান খুঁজুন..."><button type="button"><i class="fas fa-search"></i></button></div>
 </div></header>
 
 <nav class="main-nav"><div class="container" id="nav"></div></nav>
 
-<main id="app"><div class="loading">তথ্য লোড হচ্ছে...</div></main>
+<main id="app"><div class="loading" data-t="তথ্য লোড হচ্ছে...">তথ্য লোড হচ্ছে...</div></main>
 
 <footer><div class="container">
-  <h2>শাহবাজপুর পূর্বপাড়া</h2>
-  <p>জামালপুর সদর, জামালপুর — আমাদের গ্রাম, আমাদের গর্ব</p>
+  <h2 data-t="শাহবাজপুর পূর্বপাড়া">শাহবাজপুর পূর্বপাড়া</h2>
+  <p data-t="জামালপুর সদর, জামালপুর — আমাদের গ্রাম, আমাদের গর্ব">জামালপুর সদর, জামালপুর — আমাদের গ্রাম, আমাদের গর্ব</p>
   <div class="credit">Created by <b>মোঃ কাওছার আহম্মেদ</b></div>
-  <p style="margin-top:8px;font-size:14px">&copy; <span id="yr"></span> শাহবাজপুর পূর্বপাড়া। সর্বস্বত্ব সংরক্ষিত।</p>
+  <p style="margin-top:8px;font-size:14px">&copy; <span id="yr"></span> <span data-t="শাহবাজপুর পূর্বপাড়া। সর্বস্বত্ব সংরক্ষিত।">শাহবাজপুর পূর্বপাড়া। সর্বস্বত্ব সংরক্ষিত।</span></p>
 </div></footer>
 
 <a href="#home" id="top" aria-label="ওপরে যান"><i class="fas fa-arrow-up"></i></a>
@@ -209,14 +280,90 @@ var REPO='kauser66/kauser07',BR='main',RAW='https://raw.githubusercontent.com/'+
 var DATA={
   village:{ward:'ওয়ার্ড - ৪ নং',union:'ইউনিয়ন - ১১ নং শাহবাজপুর ইউনিয়ন পরিষদ',population:'',logo:'',photo:'',map:'',intro:''},
   member:{title:'ইউনিয়ন পরিষদ সদস্য'},
-  news:[],people:[],mosque:[],school:[],madrasa:[],graveyard:[],bazar:[],mor:[],volunteers:[],community:[],
+  news:[],people:[],mosque:[],school:[],madrasa:[],graveyard:[],bazar:[],mor:[],volunteers:[],community:[],gallery:[],events:[],settings:{},
   dev:{name:'মোঃ কাওছার আহম্মেদ',photo:'images/1000603258.jpg',intro:'আমি এই ওয়েবসাইটের নির্মাতা',edu:'সিভিল টেকনোলজি (ডিপ্লোমা), সিলেট সরকারি পলিটেকনিক ইনস্টিটিউট',email:'rvallagena2@gmail.com',fb:'https://www.facebook.com/normal.fb.user',phone:'',map:''}
 };
 
+/* ===== ভাষা: বাংলা ও English (US) ===== */
+var TR={
+ 'শাহবাজপুর পূর্বপাড়া, জামালপুর':'Shahbazpur Purbopara, Jamalpur',
+ 'শাহবাজপুর পূর্বপাড়া, জামালপুর সদর, জামালপুর':'Shahbazpur Purbopara, Jamalpur Sadar, Jamalpur',
+ 'আমাদের <span>এলাকা</span>':'Our <span>Village</span>',
+ 'শাহবাজপুর পূর্বপাড়া':'Shahbazpur Purbopara',
+ 'শাহবাজপুর পূর্বপাড়া। সর্বস্বত্ব সংরক্ষিত।':'Shahbazpur Purbopara. All rights reserved.',
+ 'জামালপুর সদর, জামালপুর — আমাদের গ্রাম, আমাদের গর্ব':'Jamalpur Sadar, Jamalpur — Our village, our pride',
+ 'নাম, দোকান, প্রতিষ্ঠান খুঁজুন...':'Search name, shop, place...',
+ 'তথ্য লোড হচ্ছে...':'Loading information...',
+ 'স্বাগতম আমাদের গ্রামে':'Welcome to our village',
+ 'শাহবাজপুর<br>পূর্বপাড়া':'Shahbazpur<br>Purbopara',
+ 'জামালপুর সদর, জামালপুর':'Jamalpur Sadar, Jamalpur',
+ 'সবুজে ঘেরা আমাদের গ্রাম, ভালোবাসায় গড়া আমাদের পরিচয়':'Our village surrounded by green, our identity built with love',
+ 'গুগল ম্যাপে দেখুন':'View on Google Maps',
+ 'সর্বশেষ খবর':'Latest News',
+ 'শাহবাজপুর পূর্বপাড়া, জামালপুর সদর':'Shahbazpur Purbopara, Jamalpur Sadar',
+ 'এলাকার জনসংখ্যা':'Population',
+ 'পরিচিত মুখ':'Familiar Faces',
+ 'মসজিদ':'Mosques',
+ 'বিদ্যালয়':'Schools',
+ 'প্রাথমিক বিদ্যালয়':'Primary Schools',
+ 'মাদ্রাসা':'Madrasas',
+ 'গোরস্থান':'Graveyard',
+ 'বাজার':'Markets',
+ 'মোড়':'Junctions',
+ 'স্বেচ্ছাসেবক':'Volunteers',
+ 'ব্রেকিং নিউজ':'Breaking News',
+ 'শাহবাজপুর পূর্বপাড়া গ্রামের ওয়েবসাইটে আপনাকে স্বাগতম... নতুন খবর শীঘ্রই আসছে...':'Welcome to the Shahbazpur Purbopara village website... New news coming soon...',
+ 'আরও খবর দেখুন':'See more news',
+ 'এই তথ্য শীঘ্রই যোগ করা হবে।':'This information will be added soon.',
+ 'নাম যোগ হয়নি':'Name not added',
+ 'খবর':'News',
+ 'হোম':'Home',
+ 'স্মৃতিচারণ':'Memories',
+ 'ইভেন্ট ক্যালেন্ডার':'Event Calendar',
+ 'ইভেন্ট':'Events',
+ 'আসছে':'Upcoming',
+ 'শেষ হয়েছে':'Past',
+ 'সময়':'Time',
+ 'স্থান':'Venue',
+ 'ম্যাপে দেখুন':'View on map',
+ 'ছবি':'photos',
+ 'জনপ্রতিনিধি':'Representative',
+ 'এলাকার জনপ্রতিনিধি':'Local Representative',
+ 'ইউনিয়ন পরিষদ সদস্য':'Union Parishad Member',
+ 'পদবি':'Title',
+ 'ডাকনাম':'Nickname',
+ 'বাড়ির নাম':'House name',
+ 'ধরন':'Type',
+ 'দোকানদার':'Shopkeeper',
+ 'ঠিকানা':'Address',
+ 'ফেসবুক':'Facebook',
+ 'বাড়ির ম্যাপ':'Home map',
+ 'বাড়ির লোকেশন':'Home location',
+ 'গুগল ম্যাপ':'Google Maps',
+ 'দোকানের ম্যাপ':'Shop map',
+ 'দোকানসমূহ':'Shops',
+ 'আমাদের মানুষ':'Our People',
+ 'সম্মানিত লোক':'Respected People',
+ 'হুজুর ও আলেম':'Religious Scholars',
+ 'সম্মানী ও প্রবীণ জন':'Elders',
+ 'আমাদের এলাকায় সব পেশার, সব বয়সের মানুষ আছেন। <b>প্রত্যেকেই আমাদের গর্ব, প্রত্যেকেই সমান সম্মানের।</b>':'Our area has people of every profession and age. <b>Everyone is our pride, everyone deserves equal respect.</b>',
+ 'ডেভেলপার':'Developer',
+ 'ডেভেলপার পরিচিতি':'Developer Profile',
+ 'এই ওয়েবসাইটের নির্মাতা':'Creator of this website',
+ 'পরিচয়':'Identity',
+ 'শিক্ষা':'Education',
+ 'ডার্ক':'Dark',
+ 'লাইট':'Light'
+};
+function L(s){return LANG==='en'&&TR[s]!==undefined?TR[s]:s}
+var BN_M=['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+var EN_M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
 var BN=['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
-function bn(n){return String(n).replace(/\d/g,function(d){return BN[d]})}
+function bn(n){if(LANG==='en')return String(n);return String(n).replace(/\d/g,function(d){return BN[d]})}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function clean(a){return (Array.isArray(a)?a:[]).filter(function(x){return x&&(x.name||x.title)}).map(function(x){if(x.shops)x.shops=clean(x.shops);return x})}
+function parseDay(s){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(s||''));return m?new Date(+m[1],+m[2]-1,+m[3]):null}
 
 /* ছবি: যেকোনো নামের ছবি চলবে; নতুন ছবি আসতে দেরি হলে নিজে নিজে আবার চেষ্টা করবে */
 function imgSrc(s){s=String(s||'').trim();if(!s)return '';if(/^(https?:|data:)/.test(s))return s;s=s.replace(/^\/+/,'');try{return encodeURI(decodeURI(s))}catch(e){return encodeURI(s)}}
@@ -247,23 +394,23 @@ function acts(it,ml){
   var h='';
   if(it.phone)h+='<a href="tel:'+esc(it.phone)+'"><i class="fas fa-phone"></i> '+esc(it.phone)+'</a>';
   if(it.email)h+='<a href="mailto:'+esc(it.email)+'"><i class="fas fa-envelope"></i> '+esc(it.email)+'</a>';
-  if(it.fb)h+='<a href="'+esc(it.fb)+'" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i> ফেসবুক</a>';
-  if(it.map)h+='<a href="'+esc(it.map)+'" target="_blank" rel="noopener"><i class="fas fa-location-dot"></i> '+ml+'</a>';
+  if(it.fb)h+='<a href="'+esc(it.fb)+'" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i> '+L('ফেসবুক')+'</a>';
+  if(it.map)h+='<a href="'+esc(it.map)+'" target="_blank" rel="noopener"><i class="fas fa-location-dot"></i> '+L(ml)+'</a>';
   return h?'<div class="acts">'+h+'</div>':'';
 }
 function photo(src,icon,alt){return '<div class="ph"><i class="fas '+icon+'"></i>'+im(src,alt)+'</div>'}
 function card(it,i,icon,ml){
   var rows='';
-  FIELDS.forEach(function(f){if(it[f[0]])rows+='<div class="row"><b>'+f[1]+':</b> '+esc(it[f[0]])+'</div>'});
+  FIELDS.forEach(function(f){if(it[f[0]])rows+='<div class="row"><b>'+L(f[1])+':</b> '+esc(it[f[0]])+'</div>'});
   var shops='';
   if(it.shops&&it.shops.length){
-    shops='<div class="shops"><h5><i class="fas fa-store"></i> দোকানসমূহ ('+bn(it.shops.length)+')</h5><div class="grid">'+
+    shops='<div class="shops"><h5><i class="fas fa-store"></i> '+L('দোকানসমূহ')+' ('+bn(it.shops.length)+')</h5><div class="grid">'+
       it.shops.map(function(s,j){return card(s,j,'fa-shop','দোকানের ম্যাপ')}).join('')+'</div></div>';
   }
   return '<div class="card reveal'+(shops?' wide':'')+'"><span class="sn">'+bn(i+1)+'</span>'+photo(it.photo,icon,it.name)+
-    '<div class="cb"><h4>'+esc(it.name||'নাম যোগ হয়নি')+'</h4>'+rows+(it.about?'<div class="about">'+esc(it.about)+'</div>':'')+acts(it,ml)+'</div>'+shops+'</div>';
+    '<div class="cb"><h4>'+esc(it.name||L('নাম যোগ হয়নি'))+'</h4>'+rows+(it.about?'<div class="about">'+esc(it.about)+'</div>':'')+acts(it,ml)+'</div>'+shops+'</div>';
 }
-function emptyBox(){return '<div class="empty reveal"><i class="fas fa-hourglass-half"></i>এই তথ্য শীঘ্রই যোগ করা হবে।</div>'}
+function emptyBox(){return '<div class="empty reveal"><i class="fas fa-hourglass-half"></i>'+L('এই তথ্য শীঘ্রই যোগ করা হবে।')+'</div>'}
 function grid(items,icon,ml){return items.length?'<div class="grid">'+items.map(function(x,i){return card(x,i,icon,ml)}).join('')+'</div>':emptyBox()}
 function sec(id,title,icon,inner,count,note){
   return '<section class="sec" id="'+id+'"><div class="container"><div class="stitle reveal"><h3><i class="fas '+icon+'"></i> '+title+'</h3>'+
@@ -280,65 +427,92 @@ var S=[
  ['volunteers','স্বেচ্ছাসেবক','fa-hand-holding-heart','fa-user','বাড়ির ম্যাপ']
 ];
 var CATS=['সম্মানিত লোক','হুজুর ও আলেম','সম্মানী ও প্রবীণ জন'];
+var GAL=[];
 
 function build(){
-  var v=DATA.village||{},h='',nav=[['home','হোম','fa-home']],L={};
-  ['news','people','mosque','school','madrasa','graveyard','bazar','mor','volunteers'].forEach(function(k){L[k]=clean(DATA[k])});
+  var v=DATA.village||{},h='',nav=[['home',L('হোম'),'fa-home']],LST={};
+  ['news','people','mosque','school','madrasa','graveyard','bazar','mor','volunteers'].forEach(function(k){LST[k]=clean(DATA[k])});
   var ward=v.ward||'ওয়ার্ড - ৪ নং',uni=v.union||'ইউনিয়ন - ১১ নং শাহবাজপুর ইউনিয়ন পরিষদ';
 
   var bub='';for(var b=0;b<12;b++){var z=10+Math.random()*40;bub+='<span class="bub" style="left:'+(Math.random()*100)+'%;width:'+z+'px;height:'+z+'px;animation-duration:'+(8+Math.random()*10)+'s;animation-delay:'+(Math.random()*8)+'s"></span>'}
   h+='<section class="hero" id="home">'+bub+'<div class="container"><div>'+
-    '<small><i class="fas fa-heart"></i> স্বাগতম আমাদের গ্রামে</small><br>'+
+    '<small><i class="fas fa-heart"></i> '+L('স্বাগতম আমাদের গ্রামে')+'</small><br>'+
     '<div class="ward"><i class="fas fa-landmark"></i> '+esc(ward)+' &nbsp;|&nbsp; '+esc(uni)+'</div>'+
-    '<h2>শাহবাজপুর<br>পূর্বপাড়া</h2>'+
-    '<div class="sub"><i class="fas fa-location-dot"></i> জামালপুর সদর, জামালপুর</div>'+
-    '<div class="slogan">'+(v.intro?esc(v.intro):'সবুজে ঘেরা আমাদের গ্রাম, ভালোবাসায় গড়া আমাদের পরিচয়')+'</div>'+
-    (v.map?'<a class="btn" href="'+esc(v.map)+'" target="_blank" rel="noopener"><i class="fas fa-map-location-dot"></i> গুগল ম্যাপে দেখুন</a>':'')+
-    '<a class="btn o" href="#news"><i class="fas fa-newspaper"></i> সর্বশেষ খবর</a></div>'+
+    '<h2>'+L('শাহবাজপুর<br>পূর্বপাড়া')+'</h2>'+
+    '<div class="sub"><i class="fas fa-location-dot"></i> '+L('জামালপুর সদর, জামালপুর')+'</div>'+
+    '<div class="slogan">'+(v.intro?esc(v.intro):L('সবুজে ঘেরা আমাদের গ্রাম, ভালোবাসায় গড়া আমাদের পরিচয়'))+'</div>'+
+    (v.map?'<a class="btn" href="'+esc(v.map)+'" target="_blank" rel="noopener"><i class="fas fa-map-location-dot"></i> '+L('গুগল ম্যাপে দেখুন')+'</a>':'')+
+    '<a class="btn o" href="#news"><i class="fas fa-newspaper"></i> '+L('সর্বশেষ খবর')+'</a></div>'+
     '<div class="hero-photo"><i class="fas fa-mountain-sun"></i>'+im(v.photo,'শাহবাজপুর পূর্বপাড়া')+
-    '<div class="cap">শাহবাজপুর পূর্বপাড়া, জামালপুর সদর</div></div></div></section>';
+    '<div class="cap">'+L('শাহবাজপুর পূর্বপাড়া, জামালপুর সদর')+'</div></div></div></section>';
 
   var st=[['people','পরিচিত মুখ'],['mosque','মসজিদ'],['school','বিদ্যালয়'],['madrasa','মাদ্রাসা'],['bazar','বাজার'],['mor','মোড়'],['volunteers','স্বেচ্ছাসেবক']];
-  var sh=v.population?'<div class="stat"><b>'+esc(bn(v.population))+'</b><span>এলাকার জনসংখ্যা</span></div>':'';
-  st.forEach(function(x,i){var n=L[x[0]].length;if(n)sh+='<div class="stat" style="animation-delay:'+(i*.1)+'s"><b data-n="'+n+'">০</b><span>'+x[1]+'</span></div>'});
+  var sh=v.population?'<div class="stat"><b>'+esc(bn(v.population))+'</b><span>'+L('এলাকার জনসংখ্যা')+'</span></div>':'';
+  st.forEach(function(x,i){var n=LST[x[0]].length;if(n)sh+='<div class="stat" style="animation-delay:'+(i*.1)+'s"><b data-n="'+n+'">'+bn(0)+'</b><span>'+L(x[1])+'</span></div>'});
   if(sh)h+='<div class="container"><div class="stats">'+sh+'</div></div>';
 
-  var tk=L.news.length?L.news.slice(0,10).map(function(n){return esc(n.title)}).join(' &nbsp;|&nbsp; '):'শাহবাজপুর পূর্বপাড়া গ্রামের ওয়েবসাইটে আপনাকে স্বাগতম... নতুন খবর শীঘ্রই আসছে...';
-  h+='<div class="container"><div class="breaking reveal"><div class="bl"><i class="fas fa-bolt"></i> ব্রেকিং নিউজ</div><div class="tk"><span>'+tk+'</span></div></div></div>';
+  var tk=LST.news.length?LST.news.slice(0,10).map(function(n){return esc(n.title)}).join(' &nbsp;|&nbsp; '):L('শাহবাজপুর পূর্বপাড়া গ্রামের ওয়েবসাইটে আপনাকে স্বাগতম... নতুন খবর শীঘ্রই আসছে...');
+  h+='<div class="container"><div class="breaking reveal"><div class="bl"><i class="fas fa-bolt"></i> '+L('ব্রেকিং নিউজ')+'</div><div class="tk"><span>'+tk+'</span></div></div></div>';
 
-  nav.push(['news','খবর','fa-newspaper']);
-  var nh=L.news.length?'<div class="grid">'+L.news.map(function(n,i){
+  nav.push(['news',L('খবর'),'fa-newspaper']);
+  var nh=LST.news.length?'<div class="grid">'+LST.news.map(function(n,i){
     return '<div class="card reveal'+(i>=6?' nh':'')+'" style="cursor:pointer" data-news="'+i+'"><span class="sn">'+bn(i+1)+'</span>'+photo(n.photo,'fa-newspaper',n.title)+
       '<div class="cb">'+(n.cat?'<span class="tag">'+esc(n.cat)+'</span>':'')+'<h4>'+esc(n.title)+'</h4>'+
       (n.date?'<div class="row"><i class="far fa-calendar-alt" style="color:var(--red)"></i> '+esc(n.date)+'</div>':'')+
       (n.text?'<div class="about">'+esc(String(n.text).slice(0,110))+(String(n.text).length>110?'...':'')+'</div>':'')+'</div></div>'}).join('')+'</div>'+
-      (L.news.length>6?'<div style="text-align:center;margin-top:18px"><button class="btn" id="more" type="button"><i class="fas fa-circle-plus"></i> আরও খবর দেখুন ('+bn(L.news.length-6)+')</button></div>':''):emptyBox();
-  h+=sec('news','সর্বশেষ খবর','fa-newspaper',nh,L.news.length);
+      (LST.news.length>6?'<div style="text-align:center;margin-top:18px"><button class="btn" id="more" type="button"><i class="fas fa-circle-plus"></i> '+L('আরও খবর দেখুন')+' ('+bn(LST.news.length-6)+')</button></div>':''):emptyBox();
+  h+=sec('news',L('সর্বশেষ খবর'),'fa-newspaper',nh,LST.news.length);
 
-  nav.push(['member','জনপ্রতিনিধি','fa-user-tie']);
+  /* স্মৃতিচারণ গ্যালারি */
+  GAL=clean(DATA.gallery);
+  nav.push(['gallery',L('স্মৃতিচারণ'),'fa-images']);
+  var galH=GAL.length?'<div class="grid">'+GAL.map(function(a,i){
+    var ph=(a.photos||[]).filter(function(p){return p&&p.image});
+    return '<div class="card reveal" style="cursor:pointer" data-gal="'+i+'"><span class="sn">'+bn(i+1)+'</span>'+photo(ph.length?ph[0].image:'','fa-images',a.title)+
+      '<div class="cb"><h4>'+esc(a.title)+'</h4>'+(a.date?'<div class="row"><i class="far fa-calendar-alt" style="color:var(--red)"></i> '+esc(a.date)+'</div>':'')+
+      '<div class="about">'+bn(ph.length)+' '+L('ছবি')+'</div></div></div>'}).join('')+'</div>':emptyBox();
+  h+=sec('gallery',L('স্মৃতিচারণ'),'fa-images',galH,GAL.length||null);
+
+  /* ইভেন্ট ক্যালেন্ডার */
+  var EVS=clean(DATA.events).slice().sort(function(a,b){return String(a.date||'').localeCompare(String(b.date||''))});
+  var today=new Date();today.setHours(0,0,0,0);
+  nav.push(['events',L('ইভেন্ট ক্যালেন্ডার'),'fa-calendar-days']);
+  var evH=EVS.length?'<div class="grid">'+EVS.map(function(e){
+    var d=parseDay(e.date),past=!!(d&&d<today);
+    return '<div class="card ev reveal'+(past?' past':'')+'">'+
+      '<div class="evd"><b>'+(d?bn(d.getDate()):'')+'</b><span>'+(d?(LANG==='en'?EN_M[d.getMonth()]:BN_M[d.getMonth()]):'')+'</span></div>'+
+      '<div class="cb"><span class="tag">'+L(past?'শেষ হয়েছে':'আসছে')+'</span><h4>'+esc(e.title)+'</h4>'+
+      (e.time?'<div class="row"><b>'+L('সময়')+':</b> '+esc(e.time)+'</div>':'')+
+      (e.location?'<div class="row"><b>'+L('স্থান')+':</b> '+esc(e.location)+'</div>':'')+
+      (e.about?'<div class="about">'+esc(e.about)+'</div>':'')+
+      (e.map?'<div class="acts"><a href="'+esc(e.map)+'" target="_blank" rel="noopener"><i class="fas fa-location-dot"></i> '+L('ম্যাপে দেখুন')+'</a></div>':'')+
+      '</div></div>'}).join('')+'</div>':emptyBox();
+  h+=sec('events',L('ইভেন্ট ক্যালেন্ডার'),'fa-calendar-days',evH,EVS.length||null);
+
+  nav.push(['member',L('জনপ্রতিনিধি'),'fa-user-tie']);
   var m=DATA.member||{},mr='';
-  FIELDS.forEach(function(f){if(f[0]!=='title'&&m[f[0]])mr+='<div class="row"><b>'+f[1]+':</b> '+esc(m[f[0]])+'</div>'});
-  var mh=m.name?'<div class="dev mem reveal"><div class="dp"><i class="fas fa-user-tie"></i>'+im(m.photo,m.name)+'</div><div><h4>'+esc(m.name)+'</h4><div style="margin-bottom:8px">'+esc(m.title||'ইউনিয়ন পরিষদ সদস্য')+' — '+esc(ward)+'</div>'+mr+(m.about?'<div class="row" style="margin-top:6px">'+esc(m.about)+'</div>':'')+acts(m,'বাড়ির ম্যাপ')+'</div></div>':emptyBox();
-  h+=sec('member','এলাকার জনপ্রতিনিধি','fa-user-tie',mh);
+  FIELDS.forEach(function(f){if(f[0]!=='title'&&m[f[0]])mr+='<div class="row"><b>'+L(f[1])+':</b> '+esc(m[f[0]])+'</div>'});
+  var mh=m.name?'<div class="dev mem reveal"><div class="dp"><i class="fas fa-user-tie"></i>'+im(m.photo,m.name)+'</div><div><h4>'+esc(m.name)+'</h4><div style="margin-bottom:8px">'+esc(m.title||L('ইউনিয়ন পরিষদ সদস্য'))+' — '+esc(ward)+'</div>'+mr+(m.about?'<div class="row" style="margin-top:6px">'+esc(m.about)+'</div>':'')+acts(m,'বাড়ির ম্যাপ')+'</div></div>':emptyBox();
+  h+=sec('member',L('এলাকার জনপ্রতিনিধি'),'fa-user-tie',mh);
 
   S.forEach(function(s){
-    nav.push([s[0],s[1],s[2]]);
-    h+=sec(s[0],s[1],s[2],grid(L[s[0]],s[3],s[4]),L[s[0]].length);
+    nav.push([s[0],L(s[1]),s[2]]);
+    h+=sec(s[0],L(s[1]),s[2],grid(LST[s[0]],s[3],s[4]),LST[s[0]].length);
   });
 
-  nav.push(['community','আমাদের মানুষ','fa-users']);
+  nav.push(['community',L('আমাদের মানুষ'),'fa-users']);
   var com=clean(DATA.community),grp={},ch='';
   com.forEach(function(e){var c=e.category||CATS[0];(grp[c]=grp[c]||[]).push(e)});
   CATS.concat(Object.keys(grp).filter(function(k){return CATS.indexOf(k)<0})).forEach(function(k){
-    if(grp[k]&&grp[k].length)ch+='<h4 class="sub-t reveal"><i class="fas fa-circle-user" style="color:var(--red)"></i> '+esc(k)+' <em style="font-style:normal;font-size:14px;color:#888">('+bn(grp[k].length)+')</em></h4>'+grid(grp[k],'fa-user','বাড়ির লোকেশন');
+    if(grp[k]&&grp[k].length)ch+='<h4 class="sub-t reveal"><i class="fas fa-circle-user" style="color:var(--red)"></i> '+esc(L(k))+' <em style="font-style:normal;font-size:14px;color:#888">('+bn(grp[k].length)+')</em></h4>'+grid(grp[k],'fa-user','বাড়ির লোকেশন');
   });
-  h+=sec('community','আমাদের মানুষ','fa-users',ch||emptyBox(),com.length,'আমাদের এলাকায় সব পেশার, সব বয়সের মানুষ আছেন। <b>প্রত্যেকেই আমাদের গর্ব, প্রত্যেকেই সমান সম্মানের।</b>');
+  h+=sec('community',L('আমাদের মানুষ'),'fa-users',ch||emptyBox(),com.length,L('আমাদের এলাকায় সব পেশার, সব বয়সের মানুষ আছেন। <b>প্রত্যেকেই আমাদের গর্ব, প্রত্যেকেই সমান সম্মানের।</b>'));
 
-  nav.push(['dev','ডেভেলপার','fa-code']);
+  nav.push(['dev',L('ডেভেলপার'),'fa-code']);
   var d=DATA.dev||{},dr='';
-  if(d.intro)dr+='<div class="row"><b>পরিচয়:</b> '+esc(d.intro)+'</div>';
-  if(d.edu)dr+='<div class="row"><b>শিক্ষা:</b> '+esc(d.edu)+'</div>';
-  h+=sec('dev','ডেভেলপার পরিচিতি','fa-code','<div class="dev reveal"><div class="dp"><i class="fas fa-user"></i>'+im(d.photo,d.name)+'</div><div><h4>'+esc(d.name||'মোঃ কাওছার আহম্মেদ')+'</h4><div style="margin-bottom:8px">এই ওয়েবসাইটের নির্মাতা</div>'+dr+acts(d,'বাড়ির ম্যাপ')+'</div></div>');
+  if(d.intro)dr+='<div class="row"><b>'+L('পরিচয়')+':</b> '+esc(d.intro)+'</div>';
+  if(d.edu)dr+='<div class="row"><b>'+L('শিক্ষা')+':</b> '+esc(d.edu)+'</div>';
+  h+=sec('dev',L('ডেভেলপার পরিচিতি'),'fa-code','<div class="dev reveal"><div class="dp"><i class="fas fa-user"></i>'+im(d.photo,d.name)+'</div><div><h4>'+esc(d.name||'মোঃ কাওছার আহম্মেদ')+'</h4><div style="margin-bottom:8px">'+L('এই ওয়েবসাইটের নির্মাতা')+'</div>'+dr+acts(d,'বাড়ির ম্যাপ')+'</div></div>');
 
   document.getElementById('app').innerHTML=h;
   document.getElementById('nav').innerHTML=nav.map(function(n,i){return '<a href="#'+n[0]+'"'+(i===0?' class="active"':'')+'><i class="fas '+n[2]+'"></i> '+n[1]+'</a>'}).join('');
@@ -366,6 +540,13 @@ function wire(){
       '<div class="mt"><h3>'+esc(n.title)+'</h3><div class="row">'+esc(n.date||'')+(n.cat?' | '+esc(n.cat):'')+'</div><p>'+esc(n.text||'')+'</p></div>';
     m.classList.add('on');
   }});
+  document.querySelectorAll('[data-gal]').forEach(function(c){c.onclick=function(){
+    var a=GAL[+c.getAttribute('data-gal')];if(!a)return;
+    var ph=(a.photos||[]).filter(function(p){return p&&p.image});
+    mc.innerHTML='<button class="x" type="button">&times;</button><div class="mt"><h3>'+esc(a.title)+'</h3>'+(a.date?'<div class="row">'+esc(a.date)+'</div>':'')+(a.about?'<p>'+esc(a.about)+'</p>':'')+
+      '<div class="galg">'+ph.map(function(p){return '<figure>'+im(p.image,p.caption||a.title)+(p.caption?'<figcaption>'+esc(p.caption)+'</figcaption>':'')+'</figure>'}).join('')+'</div></div>';
+    m.classList.add('on');
+  }});
   m.onclick=function(e){if(e.target===m||e.target.className==='x')m.classList.remove('on')};
   var mb=document.getElementById('more');
   if(mb)mb.onclick=function(){document.body.classList.add('shownews');mb.style.display='none'};
@@ -381,6 +562,44 @@ function wire(){
   },{passive:true})}
 }
 
+/* ===== ডার্ক মোড ও ভাষা বাটন ===== */
+function updateCtl(){
+  var dk=THEME==='dark';
+  var th=document.getElementById('thb');
+  if(th)th.innerHTML='<i class="fas '+(dk?'fa-sun':'fa-moon')+'"></i> '+L(dk?'লাইট':'ডার্ক');
+  var b=document.getElementById('lb-bn'),e=document.getElementById('lb-en');
+  if(b)b.classList.toggle('on',LANG!=='en');
+  if(e)e.classList.toggle('on',LANG==='en');
+}
+function applyStatic(){
+  document.documentElement.lang=LANG==='en'?'en':'bn';
+  document.querySelectorAll('[data-t]').forEach(function(e){e.innerHTML=L(e.getAttribute('data-t'))});
+  var q=document.getElementById('q');if(q)q.placeholder=L('নাম, দোকান, প্রতিষ্ঠান খুঁজুন...');
+  var tp=document.getElementById('top');if(tp)tp.setAttribute('aria-label',LANG==='en'?'Back to top':'ওপরে যান');
+  updateCtl();
+}
+function setTheme(t){
+  THEME=t;STORED_THEME=t;
+  document.documentElement.classList.toggle('dark',t==='dark');
+  try{localStorage.setItem('theme',t)}catch(e){}
+  updateCtl();
+}
+function setLang(l){
+  LANG=l;STORED_LANG=l;
+  try{localStorage.setItem('lang',l)}catch(e){}
+  applyStatic();
+  if(shown)render();
+}
+/* CMS এর "সাধারণ সেটিং" থেকে ডিফল্ট থিম/ভাষা (ব্যবহারকারী নিজে না বদলালে) */
+function applyDefaults(){
+  var st=DATA.settings||{};
+  if(!STORED_THEME&&(st.default_theme==='dark'||st.default_theme==='light')&&st.default_theme!==THEME){
+    THEME=st.default_theme;document.documentElement.classList.toggle('dark',THEME==='dark');
+  }
+  if(!STORED_LANG&&(st.default_lang==='en'||st.default_lang==='bn')){LANG=st.default_lang}
+  applyStatic();
+}
+
 /* ===== CMS থেকে তথ্য আনা: আগে সর্বশেষ (প্রায় সঙ্গে সঙ্গে), না পেলে সাইটের ফাইল থেকে ===== */
 function fetchJ(path){
   var b=Math.floor(Date.now()/20000);
@@ -394,20 +613,37 @@ function itemsOf(j){
 }
 function load(){
   var jobs=[];
-  [['village',['data/village.json','data/village/index.json']],['member',['data/member.json']],['dev',['data/dev.json','data/dev/index.json']]].forEach(function(x){
+  [['village',['data/village.json','data/village/index.json']],['member',['data/member.json']],['dev',['data/dev.json','data/dev/index.json']],['settings',['data/settings.json']]].forEach(function(x){
     jobs.push(firstOf(x[1]).then(function(j){
       if(j&&typeof j==='object'&&!Array.isArray(j)){var o=Object.assign({},DATA[x[0]]);for(var k in j){if(j[k]!==''&&j[k]!=null)o[k]=j[k]}DATA[x[0]]=o}
     }));
   });
-  ['news','people','mosque','school','madrasa','graveyard','bazar','mor','volunteers','community'].forEach(function(k){
+  ['news','people','mosque','school','madrasa','graveyard','bazar','mor','volunteers','community','gallery','events'].forEach(function(k){
     jobs.push(firstOf(['data/'+k+'.json']).then(function(j){var a=itemsOf(j);if(a.length)DATA[k]=a}));
   });
   return Promise.all(jobs);
 }
 var shown=false;
-function render(){shown=true;try{build();setLogo();motion();wire()}catch(e){console.error(e)}}
+function render(){shown=true;try{applyDefaults();build();setLogo();motion();wire();updateCtl()}catch(e){console.error(e)}}
 var tm=setTimeout(function(){if(!shown)render()},7000);
+
+document.getElementById('lb-bn').onclick=function(){setLang('bn')};
+document.getElementById('lb-en').onclick=function(){setLang('en')};
+document.getElementById('thb').onclick=function(){setTheme(THEME==='dark'?'light':'dark')};
+applyStatic();
 load().then(function(){clearTimeout(tm);render()},function(){clearTimeout(tm);render()});
+</script>
+
+<script>
+/* দ্রুত ও মসৃণ স্ক্রল: মেনু ও "ওপরে যান" বাটন */
+document.addEventListener('click',function(e){
+  var a=e.target.closest&&e.target.closest('a[href^="#"]');if(!a)return;
+  var target=document.querySelector(a.getAttribute('href'));if(!target)return;
+  e.preventDefault();
+  var from=window.pageYOffset,to=target.getBoundingClientRect().top+from-10,dist=to-from,dur=Math.min(420,Math.abs(dist)*.3+160),t0=null;
+  function step(now){if(t0===null)t0=now;var k=Math.min(1,(now-t0)/dur),ease=1-Math.pow(1-k,3);window.scrollTo(0,from+dist*ease);if(k<1)requestAnimationFrame(step)}
+  requestAnimationFrame(step);
+});
 </script>
 
 <script src="rating.js"></script>
